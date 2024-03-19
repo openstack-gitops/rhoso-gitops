@@ -1,0 +1,13 @@
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+
+resources:
+- cert_manager_namespace.yaml
+- cert_manager_operatorgroup.yaml
+- cert_manager_subscription.yaml
+- metallb_namespace.yaml
+- metallb_operatorgroup.yaml
+- metallb_subscription.yaml
+- nmstate_namespace.yaml
+- nmstate_operatorgroup.yaml
+- nmstate_subscription.yaml
