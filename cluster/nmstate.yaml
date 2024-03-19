@@ -33,8 +33,3 @@ spec:
   name: kubernetes-nmstate-operator
   source: redhat-operators
   sourceNamespace: openshift-marketplace
----
-apiVersion: nmstate.io/v1
-kind: NMState
-metadata:
-  name: nmstate
