@@ -5,3 +5,9 @@ secretGenerator:
   - osp-secrets.env
   options:
     disableNameSuffixHash: true
+
+resources:
+  - openstack-nncp.yaml
+
+transformers:
+  - transformers.yaml
