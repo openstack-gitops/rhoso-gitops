@@ -1,0 +1,19 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "-30"
+  name: common-olm
+  namespace: openshift-gitops
+  finalizers:
+  - resources-finalizer.argocd.argoproj.io
+spec:
+  destination:
+    server: https://kubernetes.default.svc
+  project: default
+  source:
+    path: examples/common/olm
+    repoURL: https://github.com/leifmadsen/osp-k8s-architecture
+    targetRevision: HEAD
+  syncPolicy:
+    automated: {}
