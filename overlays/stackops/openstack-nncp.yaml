@@ -1,0 +1,188 @@
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: stackops-6fszw-worker-0-llzs9
+spec:
+  desiredState:
+    interfaces:
+    - description: internalapi interface
+      ipv4:
+        address:
+        - ip: 172.17.0.10
+          prefix-length: 24
+        enabled: true
+        dhcp: false
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: ens8
+      state: up
+      type: ethernet
+    - description: storage interface
+      ipv4:
+        address:
+        - ip: 172.18.0.10
+          prefix-length: 24
+        enabled: true
+        dhcp: false
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: ens9
+      state: up
+      type: ethernet
+    - description: tenant interface
+      ipv4:
+        address:
+        - ip: 172.19.0.10
+          prefix-length: 24
+        enabled: true
+        dhcp: false
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: ens10
+      state: up
+      type: ethernet
+    - description: ctlplane interface
+      ipv4:
+        address:
+        - ip: 192.168.122.10
+          prefix-length: 24
+        enabled: true
+        dhcp: false
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: ens7
+      state: up
+      type: ethernet
+  nodeSelector:
+    kubernetes.io/hostname: stackops-6fszw-worker-0-llzs9
+    node-role.kubernetes.io/worker: ""
+---
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: stackops-6fszw-worker-0-rgzj7
+spec:
+  desiredState:
+    interfaces:
+    - description: internalapi interface
+      ipv4:
+        address:
+        - ip: 172.17.0.11
+          prefix-length: 24
+        enabled: true
+        dhcp: false
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: ens8
+      state: up
+      type: ethernet
+    - description: storage interface
+      ipv4:
+        address:
+        - ip: 172.18.0.11
+          prefix-length: 24
+        enabled: true
+        dhcp: false
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: ens9
+      state: up
+      type: ethernet
+    - description: tenant interface
+      ipv4:
+        address:
+        - ip: 172.19.0.11
+          prefix-length: 24
+        enabled: true
+        dhcp: false
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: ens10
+      state: up
+      type: ethernet
+    - description: ctlplane interface
+      ipv4:
+        address:
+        - ip: 192.168.122.11
+          prefix-length: 24
+        enabled: true
+        dhcp: false
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: ens7
+      state: up
+      type: ethernet
+  nodeSelector:
+    kubernetes.io/hostname: stackops-6fszw-worker-0-rgzj7
+    node-role.kubernetes.io/worker: ""
+---
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: stackops-6fszw-worker-0-cp5mf
+spec:
+  desiredState:
+    interfaces:
+    - description: internalapi interface
+      ipv4:
+        address:
+        - ip: 172.17.0.12
+          prefix-length: 24
+        enabled: true
+        dhcp: false
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: ens9
+      state: up
+      type: ethernet
+    - description: storage interface
+      ipv4:
+        address:
+        - ip: 172.18.0.12
+          prefix-length: 24
+        enabled: true
+        dhcp: false
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: ens10
+      state: up
+      type: ethernet
+    - description: tenant interface
+      ipv4:
+        address:
+        - ip: 172.19.0.12
+          prefix-length: 24
+        enabled: true
+        dhcp: false
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: ens11
+      state: up
+      type: ethernet
+    - description: ctlplane interface
+      ipv4:
+        address:
+        - ip: 192.168.122.12
+          prefix-length: 24
+        enabled: true
+        dhcp: false
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: ens8
+      state: up
+      type: ethernet
+  nodeSelector:
+    kubernetes.io/hostname: stackops-6fszw-worker-0-cp5mf
+    node-role.kubernetes.io/worker: ""

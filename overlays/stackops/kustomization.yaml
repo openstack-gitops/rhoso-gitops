@@ -1,0 +1,3 @@
+resources:
+  - openstack-service-secret.yaml
+  - openstack-nncp.yaml
