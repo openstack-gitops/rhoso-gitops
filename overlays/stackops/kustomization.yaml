@@ -5,6 +5,7 @@ resources:
   - openstack-ipaddresspools.yaml
   - openstack-l2advertisement.yaml
   - openstacknetconfig.yaml
+  - openstack-control-plane.yaml
 
 transformers:
   - |-
