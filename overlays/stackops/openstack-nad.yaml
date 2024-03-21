@@ -9,11 +9,11 @@ spec:
       "cniVersion": "0.3.1",
       "name": "internalapi",
       "type": "macvlan",
-      "master": "enp6s0.20",
+      "master": "internalapi",
       "ipam": {
         "type": "whereabouts",
         "range": "172.17.0.0/24",
-        "range_start": "172.17.0.30", 
+        "range_start": "172.17.0.30",
         "range_end": "172.17.0.70"
       }
     }
@@ -31,7 +31,7 @@ spec:
       "cniVersion": "0.3.1",
       "name": "ctlplane",
       "type": "macvlan",
-      "master": "enp6s0",
+      "master": "ctlplane",
       "ipam": {
         "type": "whereabouts",
         "range": "192.168.122.0/24",
@@ -51,7 +51,7 @@ spec:
       "cniVersion": "0.3.1",
       "name": "storage",
       "type": "macvlan",
-      "master": "enp6s0.21",
+      "master": "storage",
       "ipam": {
         "type": "whereabouts",
         "range": "172.18.0.0/24",
@@ -73,7 +73,7 @@ spec:
       "cniVersion": "0.3.1",
       "name": "tenant",
       "type": "macvlan",
-      "master": "enp6s0.22",
+      "master": "tenant",
       "ipam": {
         "type": "whereabouts",
         "range": "172.19.0.0/24",
