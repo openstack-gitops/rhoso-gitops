@@ -16,17 +16,13 @@ spec:
     repoURL: https://github.com/openstack-k8s-operators/architecture
     targetRevision: HEAD
     kustomize:
-      transformers:
-        - |-
-          apiVersion: builtin
-          kind: LabelTransformer
-          metadata:
-            name: notImportantHere
-          labels:
-            argocd.argoproj.io/managed-by: openshift-gitops
-          fieldSpecs:
-          - kind: Namespace
-            path: metadata/labels
-            create: true
+      patches:
+        - target:
+            kind: Namespace
+          patch: |-
+            - op: add
+              path: /metadata/labels
+              value:
+                argocd.argoproj.io/managed-by: openshift-gitops
   syncPolicy:
     automated: {}
