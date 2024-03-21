@@ -4,6 +4,7 @@ resources:
   - openstack-nad.yaml
   - openstack-ipaddresspools.yaml
   - openstack-l2advertisement.yaml
+  - openstacknetconfig.yaml
 
 transformers:
   - |-
