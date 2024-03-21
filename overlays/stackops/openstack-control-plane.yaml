@@ -2,6 +2,7 @@ apiVersion: core.openstack.org/v1beta1
 kind: OpenStackControlPlane
 metadata:
   name: openstack-galera-network-isolation
+  namespace: openstack
 spec:
   secret: osp-secret
   storageClass: standard-csi
