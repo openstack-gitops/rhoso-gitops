@@ -5,58 +5,106 @@ metadata:
 spec:
   desiredState:
     interfaces:
-    - description: internalapi interface
-      ipv4:
-        address:
-        - ip: 172.17.0.10
-          prefix-length: 24
-        enabled: true
-        dhcp: false
-      ipv6:
-        enabled: false
-      mtu: 1500
-      name: ens8
-      state: up
-      type: ethernet
-    - description: storage interface
-      ipv4:
-        address:
-        - ip: 172.18.0.10
-          prefix-length: 24
-        enabled: true
-        dhcp: false
-      ipv6:
-        enabled: false
-      mtu: 1500
-      name: ens9
-      state: up
-      type: ethernet
-    - description: tenant interface
-      ipv4:
-        address:
-        - ip: 172.19.0.10
-          prefix-length: 24
-        enabled: true
-        dhcp: false
-      ipv6:
-        enabled: false
-      mtu: 1500
-      name: ens10
-      state: up
-      type: ethernet
     - description: ctlplane interface
-      ipv4:
-        address:
-        - ip: 192.168.122.10
-          prefix-length: 24
-        enabled: true
-        dhcp: false
-      ipv6:
-        enabled: false
       mtu: 1500
       name: ens7
       state: up
       type: ethernet
+    - bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: ens7
+          vlan: {}
+      description: linux-bridge over ctlplane interface
+      ipv4:
+        address:
+        - ip: 192.168.122.10
+          prefix-length: "24"
+        dhcp: false
+        enabled: true
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: ctlplane
+      state: up
+      type: linux-bridge
+    - description: internalapi interface
+      mtu: 1500
+      name: ens8
+      state: up
+      type: ethernet
+    - bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: ens8
+          vlan: {}
+      description: linux-bridge over internalapi interface
+      ipv4:
+        address:
+        - ip: 172.17.0.10
+          prefix-length: "24"
+        dhcp: false
+        enabled: true
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: internalapi
+      state: up
+      type: linux-bridge
+    - description: storage interface
+      mtu: 1500
+      name: ens9
+      state: up
+      type: ethernet
+    - bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: ens9
+          vlan: {}
+      description: linux-bridge over storage interface
+      ipv4:
+        address:
+        - ip: 172.18.0.10
+          prefix-length: "24"
+        dhcp: false
+        enabled: true
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: storage
+      state: up
+      type: linux-bridge
+    - description: tenant interface
+      mtu: 1500
+      name: ens10
+      state: up
+      type: ethernet
+    - bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: ens10
+          vlan: {}
+      description: linux-bridge over tenant interface
+      ipv4:
+        address:
+        - ip: 172.19.0.10
+          prefix-length: "24"
+        dhcp: false
+        enabled: true
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: tenant
+      state: up
+      type: linux-bridge
   nodeSelector:
     kubernetes.io/hostname: stackops-6fszw-worker-0-llzs9
     node-role.kubernetes.io/worker: ""
@@ -68,58 +116,106 @@ metadata:
 spec:
   desiredState:
     interfaces:
-    - description: internalapi interface
-      ipv4:
-        address:
-        - ip: 172.17.0.11
-          prefix-length: 24
-        enabled: true
-        dhcp: false
-      ipv6:
-        enabled: false
-      mtu: 1500
-      name: ens8
-      state: up
-      type: ethernet
-    - description: storage interface
-      ipv4:
-        address:
-        - ip: 172.18.0.11
-          prefix-length: 24
-        enabled: true
-        dhcp: false
-      ipv6:
-        enabled: false
-      mtu: 1500
-      name: ens9
-      state: up
-      type: ethernet
-    - description: tenant interface
-      ipv4:
-        address:
-        - ip: 172.19.0.11
-          prefix-length: 24
-        enabled: true
-        dhcp: false
-      ipv6:
-        enabled: false
-      mtu: 1500
-      name: ens10
-      state: up
-      type: ethernet
     - description: ctlplane interface
-      ipv4:
-        address:
-        - ip: 192.168.122.11
-          prefix-length: 24
-        enabled: true
-        dhcp: false
-      ipv6:
-        enabled: false
       mtu: 1500
       name: ens7
       state: up
       type: ethernet
+    - bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: ens7
+          vlan: {}
+      description: linux-bridge over ctlplane interface
+      ipv4:
+        address:
+        - ip: 192.168.122.11
+          prefix-length: "24"
+        dhcp: false
+        enabled: true
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: ctlplane
+      state: up
+      type: linux-bridge
+    - description: internalapi interface
+      mtu: 1500
+      name: ens8
+      state: up
+      type: ethernet
+    - bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: ens8
+          vlan: {}
+      description: linux-bridge over internalapi interface
+      ipv4:
+        address:
+        - ip: 172.17.0.11
+          prefix-length: "24"
+        dhcp: false
+        enabled: true
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: internalapi
+      state: up
+      type: linux-bridge
+    - description: storage interface
+      mtu: 1500
+      name: ens9
+      state: up
+      type: ethernet
+    - bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: ens9
+          vlan: {}
+      description: linux-bridge over storage interface
+      ipv4:
+        address:
+        - ip: 172.18.0.11
+          prefix-length: "24"
+        dhcp: false
+        enabled: true
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: storage
+      state: up
+      type: linux-bridge
+    - description: tenant interface
+      mtu: 1500
+      name: ens10
+      state: up
+      type: ethernet
+    - bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: ens10
+          vlan: {}
+      description: linux-bridge over tenant interface
+      ipv4:
+        address:
+        - ip: 172.19.0.11
+          prefix-length: "24"
+        dhcp: false
+        enabled: true
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: tenant
+      state: up
+      type: linux-bridge
   nodeSelector:
     kubernetes.io/hostname: stackops-6fszw-worker-0-rgzj7
     node-role.kubernetes.io/worker: ""
@@ -131,58 +227,106 @@ metadata:
 spec:
   desiredState:
     interfaces:
-    - description: internalapi interface
-      ipv4:
-        address:
-        - ip: 172.17.0.12
-          prefix-length: 24
-        enabled: true
-        dhcp: false
-      ipv6:
-        enabled: false
-      mtu: 1500
-      name: ens9
-      state: up
-      type: ethernet
-    - description: storage interface
-      ipv4:
-        address:
-        - ip: 172.18.0.12
-          prefix-length: 24
-        enabled: true
-        dhcp: false
-      ipv6:
-        enabled: false
-      mtu: 1500
-      name: ens10
-      state: up
-      type: ethernet
-    - description: tenant interface
-      ipv4:
-        address:
-        - ip: 172.19.0.12
-          prefix-length: 24
-        enabled: true
-        dhcp: false
-      ipv6:
-        enabled: false
-      mtu: 1500
-      name: ens11
-      state: up
-      type: ethernet
     - description: ctlplane interface
-      ipv4:
-        address:
-        - ip: 192.168.122.12
-          prefix-length: 24
-        enabled: true
-        dhcp: false
-      ipv6:
-        enabled: false
       mtu: 1500
       name: ens8
       state: up
       type: ethernet
+    - bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: ens8
+          vlan: {}
+      description: linux-bridge over ctlplane interface
+      ipv4:
+        address:
+        - ip: 192.168.122.12
+          prefix-length: "24"
+        dhcp: false
+        enabled: true
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: ctlplane
+      state: up
+      type: linux-bridge
+    - description: internalapi interface
+      mtu: 1500
+      name: ens9
+      state: up
+      type: ethernet
+    - bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: ens9
+          vlan: {}
+      description: linux-bridge over internalapi interface
+      ipv4:
+        address:
+        - ip: 172.17.0.12
+          prefix-length: "24"
+        dhcp: false
+        enabled: true
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: internalapi
+      state: up
+      type: linux-bridge
+    - description: storage interface
+      mtu: 1500
+      name: ens10
+      state: up
+      type: ethernet
+    - bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: ens10
+          vlan: {}
+      description: linux-bridge over storage interface
+      ipv4:
+        address:
+        - ip: 172.18.0.12
+          prefix-length: "24"
+        dhcp: false
+        enabled: true
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: storage
+      state: up
+      type: linux-bridge
+    - description: tenant interface
+      mtu: 1500
+      name: ens11
+      state: up
+      type: ethernet
+    - bridge:
+        options:
+          stp:
+            enabled: false
+        port:
+        - name: ens11
+          vlan: {}
+      description: linux-bridge over tenant interface
+      ipv4:
+        address:
+        - ip: 172.19.0.12
+          prefix-length: "24"
+        dhcp: false
+        enabled: true
+      ipv6:
+        enabled: false
+      mtu: 1500
+      name: tenant
+      state: up
+      type: linux-bridge
   nodeSelector:
     kubernetes.io/hostname: stackops-6fszw-worker-0-cp5mf
     node-role.kubernetes.io/worker: ""
