@@ -13,7 +13,20 @@ spec:
   project: default
   source:
     path: examples/common/olm
-    repoURL: https://github.com/leifmadsen/osp-k8s-architecture
+    repoURL: https://github.com/openstack-k8s-operators/architecture
     targetRevision: HEAD
+    kustomize:
+      transformers:
+        - |-
+          apiVersion: builtin
+          kind: LabelTransformer
+          metadata:
+            name: notImportantHere
+          labels:
+            argocd.argoproj.io/managed-by: openshift-gitops
+          fieldSpecs:
+          - kind: Namespace
+            path: metadata/labels
+            create: true
   syncPolicy:
     automated: {}
