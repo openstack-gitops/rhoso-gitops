@@ -22,7 +22,7 @@ applied directly with `oc apply -k <directory>`.
 
 Expected order of operations is:
 
-* deploy OpenShift GitOps to the environment
+* deploy OpenShift GitOps to the environment from `orchestration/argocd`
 * deploy `applications/openstack-common`
 * deploy `overlays/stackops`
 
