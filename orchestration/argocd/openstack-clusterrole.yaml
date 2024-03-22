@@ -4,6 +4,18 @@ metadata:
   name: gitops-openstack
 rules:
 - apiGroups:
+  - core.openstack.org
+  resources:
+  - openstackcontrolplanes
+  verbs:
+  - '*'
+- apiGroups:
+  - network.openstack.org
+  resources:
+  - netconfigs
+  verbs:
+  - '*'
+- apiGroups:
   - k8s.cni.cncf.io
   resources:
   - network-attachment-definitions
@@ -20,7 +32,7 @@ rules:
   - metallb.io
   resources:
   - metallbs
-  - l2advertisement
+  - l2advertisements
   - ipaddresspools
   verbs:
   - '*'
