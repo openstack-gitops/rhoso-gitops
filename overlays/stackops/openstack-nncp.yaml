@@ -105,6 +105,11 @@ spec:
       name: tenant
       state: up
       type: linux-bridge
+    routes:
+      config:
+      - destination: 0.0.0.0/0
+        next-hop-address: 192.168.122.1
+        next-hop-interface: ctlplane
   nodeSelector:
     kubernetes.io/hostname: stackops-6fszw-worker-0-llzs9
     node-role.kubernetes.io/worker: ""
@@ -216,6 +221,11 @@ spec:
       name: tenant
       state: up
       type: linux-bridge
+    routes:
+      config:
+      - destination: 0.0.0.0/0
+        next-hop-address: 192.168.122.1
+        next-hop-interface: ctlplane
   nodeSelector:
     kubernetes.io/hostname: stackops-6fszw-worker-0-rgzj7
     node-role.kubernetes.io/worker: ""
@@ -327,6 +337,11 @@ spec:
       name: tenant
       state: up
       type: linux-bridge
+    routes:
+      config:
+      - destination: 0.0.0.0/0
+        next-hop-address: 192.168.122.1
+        next-hop-interface: ctlplane
   nodeSelector:
     kubernetes.io/hostname: stackops-6fszw-worker-0-cp5mf
     node-role.kubernetes.io/worker: ""
