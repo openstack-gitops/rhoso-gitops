@@ -1,10 +1,10 @@
-= OpenStack Common Application
+# OpenStack Common Application
 
 Contains the Application for OpenShift GitOps to get the common OpenStack
 components installed (Operators) in preparation for network configuration and
 deployment of an OpenStack control plane.
 
-== Deploying
+## Deploying
 
 _Prerequisites_
 
