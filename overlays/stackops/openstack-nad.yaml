@@ -8,7 +8,7 @@ spec:
     {
       "cniVersion": "0.3.1",
       "name": "internalapi",
-      "type": "macvlan",
+      "type": "bridge",
       "master": "internalapi",
       "ipam": {
         "type": "whereabouts",
@@ -30,7 +30,7 @@ spec:
     {
       "cniVersion": "0.3.1",
       "name": "ctlplane",
-      "type": "macvlan",
+      "type": "bridge",
       "master": "ctlplane",
       "ipam": {
         "type": "whereabouts",
@@ -50,7 +50,7 @@ spec:
     {
       "cniVersion": "0.3.1",
       "name": "storage",
-      "type": "macvlan",
+      "type": "bridge",
       "master": "storage",
       "ipam": {
         "type": "whereabouts",
@@ -72,7 +72,7 @@ spec:
     {
       "cniVersion": "0.3.1",
       "name": "tenant",
-      "type": "macvlan",
+      "type": "bridge",
       "master": "tenant",
       "ipam": {
         "type": "whereabouts",
