@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: stackops-control-plane
+spec:
+  destination:
+    server: 'https://kubernetes.default.svc'
+  source:
+    path: environments/stackops
+    repoURL: 'https://github.com/leifmadsen/rhoso-gitops.git'
+    targetRevision: HEAD
+  sources: []
+  project: default
+  syncPolicy:
+    automated:
+      prune: false
+      selfHeal: false
