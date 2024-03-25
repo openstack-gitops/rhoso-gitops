@@ -62,7 +62,6 @@ spec:
         route: {}
     template:
       databaseInstance: openstack
-      storageClass: ""
       storageRequest: 10G
       secret: osp-secret
       keystoneEndpoint: default
@@ -286,16 +285,6 @@ spec:
                 type: LoadBalancer
         replicas: 1
       heatEngine:
-        override:
-          service:
-            internal:
-              metadata:
-                annotations:
-                  metallb.universe.tf/address-pool: internalapi
-                  metallb.universe.tf/allow-shared-ip: internalapi
-                  metallb.universe.tf/loadBalancerIPs: 172.17.0.80
-              spec:
-                type: LoadBalancer
         replicas: 1
       secret: osp-secret
   ironic:
@@ -317,8 +306,6 @@ spec:
     template:
       metricStorage:
         enabled: false
-        monitoringStack:
-          type: prometheus
       autoscaling:
         enabled: false
         prometheus:
