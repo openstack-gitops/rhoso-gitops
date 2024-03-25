@@ -36,9 +36,9 @@ the network configuration.
 _Procedure_
 
 * Deploy the OpenShift GitOps instance (will require executing the command twice):
-    ```
-    $ oc create -k orchestration/openshift-gitops/
-    ```
+  ```
+  $ oc create -k orchestration/openshift-gitops/
+  ```
 
 * Deploy the required Operators for deploying an OpenStack environment using an Application:
   ```
