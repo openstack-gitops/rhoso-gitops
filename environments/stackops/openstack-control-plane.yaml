@@ -308,8 +308,6 @@ spec:
         enabled: false
       autoscaling:
         enabled: false
-        prometheus:
-          deployPrometheus: false
         aodh:
           databaseInstance: openstack
           memcachedInstance: memcached
