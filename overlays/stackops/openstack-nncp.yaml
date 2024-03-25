@@ -1,7 +1,7 @@
 apiVersion: nmstate.io/v1
 kind: NodeNetworkConfigurationPolicy
 metadata:
-  name: stackops-6fszw-worker-0-llzs9
+  name: osp-worker-0
 spec:
   desiredState:
     interfaces:
@@ -106,13 +106,13 @@ spec:
       state: up
       type: linux-bridge
   nodeSelector:
-    kubernetes.io/hostname: stackops-6fszw-worker-0-llzs9
+    kubernetes.io/hostname: osp-worker-0
     node-role.kubernetes.io/worker: ""
 ---
 apiVersion: nmstate.io/v1
 kind: NodeNetworkConfigurationPolicy
 metadata:
-  name: stackops-6fszw-worker-0-rgzj7
+  name: osp-worker-1
 spec:
   desiredState:
     interfaces:
@@ -217,13 +217,13 @@ spec:
       state: up
       type: linux-bridge
   nodeSelector:
-    kubernetes.io/hostname: stackops-6fszw-worker-0-rgzj7
+    kubernetes.io/hostname: osp-worker-1
     node-role.kubernetes.io/worker: ""
 ---
 apiVersion: nmstate.io/v1
 kind: NodeNetworkConfigurationPolicy
 metadata:
-  name: stackops-6fszw-worker-0-cp5mf
+  name: osp-worker-2
 spec:
   desiredState:
     interfaces:
@@ -328,5 +328,5 @@ spec:
       state: up
       type: linux-bridge
   nodeSelector:
-    kubernetes.io/hostname: stackops-6fszw-worker-0-cp5mf
+    kubernetes.io/hostname: osp-worker-2
     node-role.kubernetes.io/worker: ""

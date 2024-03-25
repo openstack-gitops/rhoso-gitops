@@ -7,6 +7,59 @@ resources:
   - openstacknetconfig.yaml
   - openstack-control-plane.yaml
 
+# stackops-tddgn-worker-0-6kh2k
+# stackops-tddgn-worker-0-ghlkn
+# stackops-tddgn-worker-0-wzzk6
+
+patches:
+  # osp-worker-0
+  - target:
+      kind: NodeNetworkConfigurationPolicy
+      name: osp-worker-0
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: stackops-tddgn-worker-0-6kh2k
+  - target:
+      kind: NodeNetworkConfigurationPolicy
+      name: osp-worker-0
+    patch: |-
+      - op: replace
+        path: /spec/nodeSelector/kubernetes.io~1hostname
+        value: stackops-tddgn-worker-0-6kh2k
+
+# osp-worker-1
+  - target:
+      kind: NodeNetworkConfigurationPolicy
+      name: osp-worker-1
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: stackops-tddgn-worker-0-ghlkn
+  - target:
+      kind: NodeNetworkConfigurationPolicy
+      name: osp-worker-1
+    patch: |-
+      - op: replace
+        path: /spec/nodeSelector/kubernetes.io~1hostname
+        value: stackops-tddgn-worker-0-ghlkn
+
+# osp-worker-2
+  - target:
+      kind: NodeNetworkConfigurationPolicy
+      name: osp-worker-2
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: stackops-tddgn-worker-0-wzzk6
+  - target:
+      kind: NodeNetworkConfigurationPolicy
+      name: osp-worker-2
+    patch: |-
+      - op: replace
+        path: /spec/nodeSelector/kubernetes.io~1hostname
+        value: stackops-tddgn-worker-0-wzzk6
+
 transformers:
   - |-
     apiVersion: builtin
