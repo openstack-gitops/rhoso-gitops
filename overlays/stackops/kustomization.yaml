@@ -35,14 +35,14 @@ patches:
     patch: |-
       - op: replace
         path: /metadata/name
-        value: stackops-tddgn-worker-0-ghlkn
+        value: stackops-tddgn-worker-0-wzzk6
   - target:
       kind: NodeNetworkConfigurationPolicy
       name: osp-worker-1
     patch: |-
       - op: replace
         path: /spec/nodeSelector/kubernetes.io~1hostname
-        value: stackops-tddgn-worker-0-ghlkn
+        value: stackops-tddgn-worker-0-wzzk6
 
 # osp-worker-2
   - target:
@@ -51,14 +51,14 @@ patches:
     patch: |-
       - op: replace
         path: /metadata/name
-        value: stackops-tddgn-worker-0-wzzk6
+        value: stackops-tddgn-worker-0-ghlkn
   - target:
       kind: NodeNetworkConfigurationPolicy
       name: osp-worker-2
     patch: |-
       - op: replace
         path: /spec/nodeSelector/kubernetes.io~1hostname
-        value: stackops-tddgn-worker-0-wzzk6
+        value: stackops-tddgn-worker-0-ghlkn
 
 transformers:
   - |-
