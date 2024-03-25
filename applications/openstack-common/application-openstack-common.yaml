@@ -8,7 +8,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: applications/openstack-common
+    path: applications/openstack-common/common
     repoURL: https://github.com/leifmadsen/rhoso-gitops.git
     targetRevision: HEAD
   syncPolicy:

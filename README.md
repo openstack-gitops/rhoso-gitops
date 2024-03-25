@@ -11,7 +11,7 @@ Repository to demo installation of Red Hat OpenStack Services on OpenShift
 * `applications/`
     * contains the base Applications to get the OpenStack
       Operators running
-* `overlays/`
+* `environments/`
     *  contains the OpenStack deployment application that is managed by the
        Operators
 
@@ -24,11 +24,11 @@ Expected order of operations is:
 
 * configure your networking environment and document the interfaces for
   configuration of NNCP
-* deploy OpenShift GitOps to the environment from `orchestration/argocd`
+* deploy OpenShift GitOps to the environment from `orchestration/openshift-gitops`
 * deploy `applications/openstack-common`
-* copy and modify `overlays/stackops` into a new path and modify the
+* copy and modify `environments/stackops` into a new path and modify the
   openstack-nncp.yaml at the least
-* deploy `overlays/stackops`
+* deploy `environments/stackops`
 
 **NOTE**: The deployment of `stackops` will require modification of the files to match
 the network configuration.
@@ -47,7 +47,7 @@ _Procedure_
 
 * Deploy OpenStack:
   ```
-  $ oc create -k overlays/stackops/
+  $ oc create -k applications/stackops/
   ```
 
 ## Accessing the user interface for OpenShift GitOps

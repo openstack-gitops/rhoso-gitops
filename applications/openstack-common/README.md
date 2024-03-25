@@ -6,5 +6,5 @@ _Procedure_
 
 * Create the _openstack-common_ Application in OpenShift GitOps:
   ```
-  $ oc create -f application-openstack-common.yaml
+  $ oc create -f .
   ```
