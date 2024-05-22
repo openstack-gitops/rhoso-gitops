@@ -42,6 +42,10 @@ rules:
   - secrets
   verbs:
   - '*'
+- apiGroups:
+  - metal3.io
+  resources:
+  - '*'
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
