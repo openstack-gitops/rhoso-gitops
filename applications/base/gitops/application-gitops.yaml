@@ -14,7 +14,7 @@ spec:
   source:
     path: base/gitops/subscribe
     repoURL: https://github.com/leifmadsen/rhoso-gitops.git
-    targetRevision: HEAD
+    targetRevision: add-gitops-for-managed
     kustomize:
       patches:
         - target:
@@ -43,7 +43,7 @@ spec:
   source:
     path: base/gitops/enable
     repoURL: https://github.com/leifmadsen/rhoso-gitops.git
-    targetRevision: HEAD
+    targetRevision: add-gitops-for-managed
     kustomize:
       patches:
         - target:
