@@ -5,3 +5,12 @@ resources:
   - namespace.yaml
   - operatorgroup.yaml
   - subscription.yaml
+  - ../../console
+
+patches:
+  - target:
+      group: operator.openshift.io
+      kind: Console
+      version: v1
+      name: cluster
+    path: patches/console-plugin-gitops.yaml
