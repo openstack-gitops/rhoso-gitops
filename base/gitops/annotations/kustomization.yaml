@@ -26,3 +26,11 @@ patches:
         path: /metadata/annotations
         value:
           argocd.argoproj.io/sync-wave: "-10"
+
+  - target:
+      kind: LVMCluster
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
