@@ -5,4 +5,4 @@ resources:
   - subscribe/namespace.yaml
   - subscribe/operatorgroup.yaml
   - subscribe/subscription.yaml
-  - enable/multiclusterhub.yaml
+  - namespace-credentials.yaml
