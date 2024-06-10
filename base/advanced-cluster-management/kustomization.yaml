@@ -6,3 +6,4 @@ resources:
   - subscribe/operatorgroup.yaml
   - subscribe/subscription.yaml
   - namespace-credentials.yaml
+  - enable/provisioning.yaml
