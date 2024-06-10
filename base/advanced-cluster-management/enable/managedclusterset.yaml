@@ -1,0 +1,12 @@
+apiVersion: cluster.open-cluster-management.io/v1beta2
+kind: ManagedClusterSet
+metadata:
+  annotations:
+    cluster.open-cluster-management.io/submariner-broker-ns: rhoso-broker
+  finalizers:
+  - cluster.open-cluster-management.io/managedclusterset-clusterrole
+  - cluster.open-cluster-management.io/submariner-cleanup
+  name: rhoso
+spec:
+  clusterSelector:
+    selectorType: ExclusiveClusterSetLabel
