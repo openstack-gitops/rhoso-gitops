@@ -55,6 +55,13 @@ rules:
   verbs:
   - '*'
 - apiGroups:
+  - cluster.open-cluster-management.io
+  resources:
+  - 'managedclustersets'
+  - 'managedclustersetbindings'
+  verbs:
+  - '*'
+- apiGroups:
   - multicluster.openshift.io
   resources:
   - '*'
