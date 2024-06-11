@@ -35,7 +35,7 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 
-   - target:
+  - target:
       kind: ArgoCD
     patch: |-
       - op: add
