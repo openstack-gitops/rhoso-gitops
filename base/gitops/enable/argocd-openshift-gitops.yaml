@@ -154,6 +154,24 @@ spec:
   - check: |
       hs = {}
       if obj.status ~= nil then
+        if obj.status.provisioning ~= nil then
+          if obj.status.provisioning.state ~= nil then
+            if obj.status.provisioning.state == "available" or obj.status.provisioning.state == "provisioned" then
+              hs.status = "Healthy"
+              hs.message = condition.message
+              return hs
+            end
+          end
+        end
+      end
+      hs.status = "Progressing"
+      hs.message = "Waiting for BareMetalHost to be Ready"
+      return hs
+    group: metal3.io
+    kind: BareMetalHost
+  - check: |
+      hs = {}
+      if obj.status ~= nil then
         if obj.status.conditions ~= nil then
           for i, condition in ipairs(obj.status.conditions) do
             if condition.type == "Ready" and condition.status == "False" then
