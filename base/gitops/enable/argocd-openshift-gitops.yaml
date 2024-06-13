@@ -158,14 +158,14 @@ spec:
           if obj.status.provisioning.state ~= nil then
             if obj.status.provisioning.state == "available" or obj.status.provisioning.state == "provisioned" then
               hs.status = "Healthy"
-              hs.message = condition.message
+              hs.message = obj.status.provisioning.state
               return hs
             end
           end
         end
       end
       hs.status = "Progressing"
-      hs.message = "Waiting for BareMetalHost to be Ready"
+      hs.message = "Waiting for BareMetalHost to be available or provisioned"
       return hs
     group: metal3.io
     kind: BareMetalHost
