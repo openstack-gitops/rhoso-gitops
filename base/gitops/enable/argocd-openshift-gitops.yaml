@@ -215,6 +215,29 @@ spec:
       return hs
     group: core.openstack.org
     kind: OpenStackControlPlane
+  - check: |
+      hs = {}
+      if obj.status ~= nil then
+        if obj.status.conditions ~= nil then
+          for i, condition in ipairs(obj.status.conditions) do
+            if condition.type == "Ready" and condition.status == "False" then
+              hs.status = "Progressing"
+              hs.message = condition.message
+              return hs
+            end
+            if condition.type == "Ready" and condition.status == "True" then
+              hs.status = "Healthy"
+              hs.message = condition.message
+              return hs
+            end
+          end
+        end
+      end
+      hs.status = "Progressing"
+      hs.message = "Waiting for OpenStackControlPlane setup completion."
+      return hs
+    group: dataplane.openstack.org
+    kind: OpenStackDataPlaneNodeSet
   server:
     autoscale:
       enabled: false
