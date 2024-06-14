@@ -1,7 +1,0 @@
-apiVersion: baremetal.openstack.org/v1beta1
-kind: OpenStackProvisionServer
-metadata:
-  name: openstack
-  namespace: openstack
-spec:
-  port: 6190
