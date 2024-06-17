@@ -220,12 +220,7 @@ spec:
       if obj.status ~= nil then
         if obj.status.conditions ~= nil then
           for i, condition in ipairs(obj.status.conditions) do
-            if condition.type == "Ready" and condition.status == "False" then
-              hs.status = "Progressing"
-              hs.message = condition.message
-              return hs
-            end
-            if condition.type == "Ready" and condition.status == "True" then
+            if condition.type == "SetupReady" and condition.status == "True" then
               hs.status = "Healthy"
               hs.message = condition.message
               return hs
@@ -234,7 +229,7 @@ spec:
         end
       end
       hs.status = "Progressing"
-      hs.message = "Waiting for OpenStackControlPlane setup completion."
+      hs.message = "Waiting for OpenStackDataPlaneNodeSet to be SetupReady."
       return hs
     group: dataplane.openstack.org
     kind: OpenStackDataPlaneNodeSet
