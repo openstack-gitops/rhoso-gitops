@@ -1,6 +1,8 @@
 apiVersion: operator.openshift.io/v1
 kind: Network
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-options: Prune=false
   name: cluster
 spec:
   defaultNetwork:
