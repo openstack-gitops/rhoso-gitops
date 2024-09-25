@@ -1,5 +1,7 @@
 # OpenShift GitOps Applications
 
 Contains Application manifests for OpenShift GitOps to manage the deployment of
-the common OpenStack componentsin preparation for network configuration and
+the common OpenStack components in preparation for network configuration and
 deployment of an OpenStack control plane.
+
+These Applications are intended to be applied to the GitOps environment on the Red Hat Advanced Cluster Management (RHACM) hub cluster.

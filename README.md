@@ -1,19 +1,19 @@
 # rhoso-gitops
 
-Repository to demo installation of Red Hat OpenStack Services on OpenShift
-(RHOSO) using OpenShift GitOps.
+An implementation of Red Hat GitOps (GitOps, ArgoCD) for managing the
+deployment of Red Hat OpenStack Services for OpenShift (RHOSO).
 
 ## Repository Layout
 
-* `orchestration/`
-    * contains the configuration for OpenShift GitOps (ArgoCD)
-      for cluster-scoped management of the OpenStack installation
 * `applications/`
-    * contains the base Applications to get the OpenStack
-      Operators running
-* `environments/`
-    *  contains the OpenStack deployment application that is managed by the
-       Operators
+    * contains the base GitOps Operator (ArgoCD) Application manifests for
+      ArgoCD to manage push-install from the hub cluster to the managed cluster
+* `base/`
+    * contains base deployment knowledge not (yet) contained in the validated
+      architectures repository in support of OpenStack deployments with RHOSO
+* `orchestration/`
+    * contains the configuration to deploy for OpenShift GitOps (ArgoCD)
+      for cluster-scoped management on both the hub cluster and managed cluster
 
 ## Deployment
 
@@ -26,12 +26,8 @@ Expected order of operations is:
   configuration of NNCP
 * deploy OpenShift GitOps to the environment from `orchestration/openshift-gitops`
 * deploy `applications/openstack-common`
-* copy and modify `environments/stackops` into a new path and modify the
-  openstack-nncp.yaml at the least
-* deploy `environments/stackops`
-
-**NOTE**: The deployment of `stackops` will require modification of the files to match
-the network configuration.
+* create your `environments` in a private repository for deployment (TODO: provide working example)
+* deploy `environments/`
 
 _Procedure_
 
