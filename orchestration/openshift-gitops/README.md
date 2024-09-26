@@ -13,8 +13,11 @@ for managed of resources for an OpenStack deployment.
 
 _Procedure_
 
+* Modify the contents of `gitrepo.env` to set the value of the `url` parameter
+  to the internal git repo hosting your environment specific configuration
+
 * Create an OpenShift GitOps deployment: ``` $ oc create -k . ```
 
 **NOTE** It will likely be necessary to run the command twice as the
 Subscription will not be ready prior to modification of the ArgoCD resource,
-which is created automatically.
+which is created automatically if you're deploying this manually.
