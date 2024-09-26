@@ -9,7 +9,7 @@ spec:
   project: default
   source:
     path: applications/openstack-common/common
-    repoURL: https://github.com/leifmadsen/rhoso-gitops.git
+    repoURL: https://github.com/openstack-gitops/rhoso-gitops.git
     targetRevision: HEAD
   syncPolicy:
     automated: {}

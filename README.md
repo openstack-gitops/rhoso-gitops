@@ -22,10 +22,10 @@ applied directly with `oc apply -k <directory>`.
 
 Expected order of operations is:
 
-* configure your networking environment and document the interfaces for
-  configuration of NNCP
-* deploy OpenShift GitOps to the environment from `orchestration/openshift-gitops`
-* deploy `applications/openstack-common`
+* deploy RHACM and configure it so deployment of OpenShift clusters is possible (the hub cluster)
+* deploy ArgoCD to the hub cluster
+  * use the `orchestration/` directory to self-deploy Red Hat GitOps and the initial ArgoCD deployment
+* create the base Applications from `applications/openstack-common` to the hub cluster
 * create your `environments` in a private repository for deployment (TODO: provide working example)
 * deploy `environments/`
 
@@ -35,6 +35,13 @@ _Procedure_
   ```
   $ oc create -k orchestration/openshift-gitops/
   ```
+
+* Setup RHACM for RHOSO cluster deployments and placements with GitOps:
+  ```
+  oc apply -k base/advanced-cluster-managment/
+  ```
+
+* Add your cluster and place it in the `rhoso` ClusterSet
 
 * Deploy the required Operators for deploying an OpenStack environment using an Application:
   ```

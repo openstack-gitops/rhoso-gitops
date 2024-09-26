@@ -13,7 +13,7 @@ spec:
   project: default
   source:
     path: base/gitops/subscribe
-    repoURL: https://github.com/leifmadsen/rhoso-gitops.git
+    repoURL: https://github.com/openstack-gitops/rhoso-gitops.git
     targetRevision: HEAD
     kustomize:
       patches:
@@ -42,7 +42,7 @@ spec:
   project: default
   source:
     path: base/gitops/enable
-    repoURL: https://github.com/leifmadsen/rhoso-gitops.git
+    repoURL: https://github.com/openstack-gitops/rhoso-gitops.git
     targetRevision: HEAD
     kustomize:
       patches:
