@@ -1,0 +1,70 @@
+#!/usr/bin/env -S ansible-playbook
+---
+- name: Deploy Red Hat GitOps
+  connection: local
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    # Subscribe to GitOps Operator
+    - name: Subscribe to Red Hat GitOps
+      kubernetes.core.k8s:
+        definition: "{{ lookup('kubernetes.core.kustomize', dir=playbook_dir + '/subscribe') }}"
+
+    - name: Get status of Subscription before continuing
+      kubernetes.core.k8s_info:
+        api_version: operators.coreos.com/v1alpha1
+        kind: Subscription
+        name: openshift-gitops-operator
+        namespace: openshift-gitops-operator
+      register: result_subscription
+      until: result_subscription.resources[0].status.state | d(None) == "AtLatestKnown"
+      retries: 12
+      delay: 10
+
+    # Validate Subscription
+    - name: Fail when subscription is not available
+      fail:
+        msg: GitOps subscription is not available
+      when: >
+        (result_subscription.resources is not defined) or
+        (result_subscription.resources | length < 1) or
+        (result_subscription.resources[0].status.state | d(None) != "AtLatestKnown")
+
+    - name: Get status of openshift-gitops Namespace creation
+      kubernetes.core.k8s_info:
+        api_version: v1
+        kind: Namespace
+        name: openshift-gitops
+      register: result_namespace
+      until: result_namespace.resources[0].status.phase | d(None) == "Active"
+      retries: 12
+      delay: 10
+
+    - name: Fail when openshift-gitops namespace is not available
+      fail:
+        msg: Namespace for openshift-gitops is not avalable
+      when: >
+        (result_namespace.resources is not defined) or
+        (result_namespace.resources | length < 1) or
+        (result_namespace.resources[0].status.phase != "Active")
+
+    # Deploy ArgoCD
+    - name: Enable GitOps deployment in preparation for RHOSO
+      kubernetes.core.k8s:
+        definition: "{{ lookup('kubernetes.core.kustomize', dir=playbook_dir + '/enable') }}"
+
+    # Validate ArgoCD deployment
+    - name: Get status of ArgoCD deployment
+      kubernetes.core.k8s_info:
+        api_version: argoproj.io/v1beta1
+        kind: ArgoCD
+        name: openshift-gitops
+        namespace: openshift-gitops
+      register: result_argocd
+      until: result_argocd.resources[0].status.phase | d(None) == "Available"
+
+    - name: Route to the ArgoCD interface
+      ansible.builtin.debug:
+        msg: Your ArgoCD interface is available at https://{{ result_argocd.resources[0].status.host }}
+# vim: ft=yaml

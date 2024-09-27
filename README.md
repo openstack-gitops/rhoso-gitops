@@ -22,36 +22,73 @@ applied directly with `oc apply -k <directory>`.
 
 Expected order of operations is:
 
-* deploy RHACM and configure it so deployment of OpenShift clusters is possible (the hub cluster)
-* deploy ArgoCD to the hub cluster
-  * use the `orchestration/` directory to self-deploy Red Hat GitOps and the initial ArgoCD deployment
-* create the base Applications from `applications/openstack-common` to the hub cluster
-* create your `environments` in a private repository for deployment (TODO: provide working example)
-* deploy `environments/`
+* (optional) Deploy RHACM and configure it so deployment of OpenShift clusters is possible (the hub cluster).
+* Deploy ArgoCD to the hub cluster or unmanaged cluster
+  * Use the `base/gitops/` directory to deploy Red Hat GitOps and the initial ArgoCD deployment
+* Create the base Applications from `applications/openstack-common` to the hub cluster
+* Create your `environments` in a private repository for deployment (TODO: provide working example)
+* Deploy `environments/`
+
+### Bootstrap Red Hat GitOps
+
+You must first install Red Hat GitOps (GitOps) to provide the automation system
+for deploying RHOSO. Installation of GitOps can be done on a hub cluster or an
+unmanaged cluster. If installed on the hub cluster, you can use a GitOps
+Application to deploy GitOps on the managed cluster. If you are not using a hub
+cluster, then installation of GitOps on the unmanaged cluster must done first.
+
+_Prerequisites_
+
+* You have installed Ansible on the workstation.
+* You have installed the Ansible collection `kubernetes.core.k8s`.
+* You have installed Kustomize on the workstation.
+* You have logged into the OpenShift cluster as the kubeadmin user you want GitOps to be deployed to.
 
 _Procedure_
 
-* Deploy the OpenShift GitOps instance (will require executing the command twice):
+Use the `deployment.playbook` script to automate the installation of Red Hat GitOps with Ansible and Kustomize.
+
+* Login to the OpenShift cluster as the kubeadmin user from the workstation.
+* Install the Red Hat GitOps Operator and deploy an ArgoCD instance with the `deployment.playbook` script:
   ```
-  $ oc create -k orchestration/openshift-gitops/
+  $ ./base/gitops/deployment.playbook
   ```
+Alternatively, deploy Red Hat GitOps and ArgoCD with Kustomize directly in stages.
+
+* Login to the OpenShift cluster as the kubeadmin user from the workstation.
+* Install the Red Hat GitOps Operator:
+  ```
+  $ oc create --save-config -k base/gitops/subscribe
+  ```
+* Validate the Subscription has been completed. The subscription status should return :
+  ```
+  $ oc get subscription.operators.coreos.com/openshift-gitops-operator \
+      --namespace openshift-gitops-operator -ojsonpath='{.status.state}'
+  ```
+* When the value returned is `AtLastKnown`, then continue by deploying and ArgoCD instance.
+
+* Create the ArgoCD instance:
+  ```
+  $ oc create --save-config -k base/gitops/enable
+  ```
+
+### Set up Red Hat Advanced Cluster Management for GitOps
+
+Configure Red Hat Advanced Cluster Management (RHACM) to support GitOps Applications for managed clusters.
+
+_Prerequisites_
+
+* You have installed and setup RHACM (hub cluster) for your hardware environment that will host the managed OpenShift deployment.
+* You are logged into the hub cluster as the kubeadmin user.
+* You have installed Red Hat GitOps.
+
+_Procedure_
 
 * Setup RHACM for RHOSO cluster deployments and placements with GitOps:
   ```
   oc apply -k base/advanced-cluster-managment/
   ```
-
 * Add your cluster and place it in the `rhoso` ClusterSet
-
-* Deploy the required Operators for deploying an OpenStack environment using an Application:
-  ```
-  $ oc create -k applications/openstack-common/
-  ```
-
-* Deploy OpenStack:
-  ```
-  $ oc create -k applications/stackops/
-  ```
 
 ## Accessing the user interface for OpenShift GitOps
 
