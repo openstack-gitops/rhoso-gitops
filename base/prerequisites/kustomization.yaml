@@ -6,3 +6,6 @@ resources:
   - cert-manager-operator
   - metallb-operator
   - cluster-observability-operator
+
+components:
+  - ../gitops/components/annotations

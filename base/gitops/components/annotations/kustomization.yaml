@@ -42,3 +42,20 @@ patches:
         path: /metadata/annotations
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+
+  - target:
+      kind: NMState
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+
+  - target:
+      kind: MetalLB
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+
