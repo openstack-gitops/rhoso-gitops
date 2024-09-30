@@ -22,7 +22,7 @@ spec:
         target:
           kind: Namespace
     path: base/prerequisites
-    repoURL: https://github.com/openstack-gitops/rhoso-gitops/base/prerequisites
+    repoURL: https://github.com/openstack-gitops/rhoso-gitops.git
     targetRevision: HEAD
   syncPolicy:
     automated: {}
