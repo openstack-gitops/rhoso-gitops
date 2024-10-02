@@ -3,6 +3,10 @@
 An implementation of Red Hat GitOps (GitOps, ArgoCD) for managing the
 deployment of Red Hat OpenStack Services for OpenShift (RHOSO).
 
+**WARNING**: _Contents of this repository are a work in progress and not yet
+ready for usage in a production environment. The organization or contents of
+this repository may change drastically at any time._
+
 ## Repository Layout
 
 * `applications/`
