@@ -30,13 +30,13 @@ _Prerequisites_
 _Procedure_
 
 * Add the Hashicorp Helm repository:
-```bash
-$ helm repo add hashicorp https://helm.releases.hashicorp.com
-```
+  ```bash
+  $ helm repo add hashicorp https://helm.releases.hashicorp.com
+  ```
 * Update all repositories:
-```bash
-$ helm repo update
-```
+  ```bash
+  $ helm repo update
+  ```
 * Install Hashicorp Vault:
   * Create a project for Vault:
     ```bash
@@ -136,11 +136,12 @@ in the Hashicorp tutorial guide.
 
 _Procedure_
 * Create the initial `openstack/osp-secret` key-value data in Vault:
-```bash
-$ oc exec -i vault-0 --namespace=vault -- vault kv put secret/openstack/osp-secret AdminPassword="$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32)"
-```
+  ```bash
+  $ oc exec -i vault-0 --namespace=vault -- vault kv put secret/openstack/osp-secret AdminPassword="$(tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32)"
+  ```
 
 * Patch `openstack/osp-secret` with the rest of the data required for the Secret osp-secret:
+
   **WARNING**: Be sure to provide the full list of keys, and create a fernet key for `BarbicanSimpleCryptoKEK`.
   ```bash
   $ for key in AodhPassword AodhDatabasePassword BarbicanDatabasePassword
@@ -157,58 +158,58 @@ _Procedure_
 
 * Login to the OpenShift environment as a cluster-admin.
 * Create the Vault connection:
-```yaml
-$ oc create --save-config -f <<EOF
-apiVersion: secrets.hashicorp.com/v1beta1
-kind: VaultConnection
-metadata:
-  name: openstack-vault-connection
-  namespace: openstack
-spec:
-  address: http://vault.vault.svc.cluster.local:8200
-EOF
-```
+  ```yaml
+  $ oc create --save-config -f <<EOF
+  apiVersion: secrets.hashicorp.com/v1beta1
+  kind: VaultConnection
+  metadata:
+    name: openstack-vault-connection
+    namespace: openstack
+  spec:
+    address: http://vault.vault.svc.cluster.local:8200
+  EOF
+  ```
 * Create the Vault authentication:
-```yaml
-$ oc create --save-config - <<EOF
-apiVersion: secrets.hashicorp.com/v1beta1
-kind: VaultAuth
-metadata:
-  name: openstack-vault-auth
-  namespace: openstack
-spec:
-  kubernetes:
-    role: openstack
-    serviceAccount: default
-    tokenExpirationSeconds: 600
-  method: kubernetes
-  mount: kubernetes
-  vaultConnectionRef: openstack-vault-connection
-EOF
-```
+  ```yaml
+  $ oc create --save-config - <<EOF
+  apiVersion: secrets.hashicorp.com/v1beta1
+  kind: VaultAuth
+  metadata:
+    name: openstack-vault-auth
+    namespace: openstack
+  spec:
+    kubernetes:
+      role: openstack
+      serviceAccount: default
+      tokenExpirationSeconds: 600
+    method: kubernetes
+    mount: kubernetes
+    vaultConnectionRef: openstack-vault-connection
+  EOF
+  ```
 * Create the Vault static secret:
-```yaml
-$ oc create --save-config -f - <<EOF
-apiVersion: secrets.hashicorp.com/v1beta1
-kind: VaultStaticSecret
-metadata:
-  name: openstack-osp-secret
-  namespace: openstack
-spec:
-  destination:
-    create: true
-    name: osp-secret
-    overwrite: false
-    transformation: {}
-  hmacSecretData: true
-  mount: secret
-  path: openstack/osp-secret
-  refreshAfter: 30s
-  type: kv-v2
-  vaultAuthRef: openstack-vault-auth
-EOF
-```
+  ```yaml
+  $ oc create --save-config -f - <<EOF
+  apiVersion: secrets.hashicorp.com/v1beta1
+  kind: VaultStaticSecret
+  metadata:
+    name: openstack-osp-secret
+    namespace: openstack
+  spec:
+    destination:
+      create: true
+      name: osp-secret
+      overwrite: false
+      transformation: {}
+    hmacSecretData: true
+    mount: secret
+    path: openstack/osp-secret
+    refreshAfter: 30s
+    type: kv-v2
+    vaultAuthRef: openstack-vault-auth
+  EOF
+  ```
 * Validate the Secret osp-secret was created and populated:
-```bash
-$ oc get secret/osp-secret -oyaml
-```
+  ```bash
+  $ oc get secret/osp-secret -oyaml
+  ```
