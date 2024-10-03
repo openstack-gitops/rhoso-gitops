@@ -4,7 +4,7 @@ Provides a containerized environment to run client commands, including `oc` and 
 
 ## Creating the container image
 
-Using buildah or podman, run the following commande from the root of
+Using buildah or podman, run the following commands from the root of
 the repository:
 
 ```Bash
