@@ -1,4 +1,4 @@
-# Container image
+# Using containerized client interfaces
 
 Provides a containerized environment to run client commands, including `oc` and `ansible`.
 
