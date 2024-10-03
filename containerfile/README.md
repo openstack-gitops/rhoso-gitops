@@ -14,7 +14,7 @@ $ podman build -t rhoso-gitops:latest -f containerfile/oc-client .
 
 ## Using the container image
 
-Run the following command:
+Use `podman` to connect to the the container image and access the clients:
 
 ```Bash
 $ podman run --rm -ti \
