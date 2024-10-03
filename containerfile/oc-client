@@ -1,0 +1,8 @@
+FROM quay.io/appuio/oc:v4.16
+
+RUN python3.9 -m venv ~/.ansible
+RUN ~/.ansible/bin/pip install ansible-core kubernetes
+RUN ~/.ansible/bin/ansible-galaxy collection install kubernetes.core
+
+WORKDIR /root
+COPY ./ ./rhoso-gitops
