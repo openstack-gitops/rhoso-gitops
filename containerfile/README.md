@@ -29,8 +29,6 @@ If you want to access ansible, you can then run:
 # source .ansible/bin/activate
 ```
 
-This will load the python virtualenv, exposing the needed libs and
-binaries.
 
 The current repository is copied in the container, and is available in
 /root/rhoso-gitops directly.
