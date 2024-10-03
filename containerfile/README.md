@@ -33,8 +33,7 @@ If you want to access ansible, you can then run:
 The current repository is copied into the container, and is available in
 /root/rhoso-gitops.
 
-You can, of course, bind-mount it from your workstation if you have anything
-to test:
+Alternatively, you can bind-mount the repository from your workstation for testing purposes:
 
 ```Bash
 $ podman run --rm -ti \
