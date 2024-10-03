@@ -30,8 +30,8 @@ If you want to access ansible, you can then run:
 ```
 
 
-The current repository is copied in the container, and is available in
-/root/rhoso-gitops directly.
+The current repository is copied into the container, and is available in
+/root/rhoso-gitops.
 
 You can, of course, bind-mount it from your workstation if you have anything
 to test:
