@@ -2,7 +2,7 @@
 
 Provides a containerized environment to run client commands, including `oc` and `ansible`.
 
-## Create the container image
+## Creating the container image
 
 Using buildah or podman, run the following commande from the root of
 the repository:
