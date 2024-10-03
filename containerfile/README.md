@@ -1,8 +1,6 @@
 # Container image
 
-Provides a quick'n'easy environment from where you can run the various
-`oc` commands, but also the needed `ansible` related steps as described
-in this repository.
+Provides a containerized environment to run client commands, including `oc` and `ansible`.
 
 ## Create the container image
 
