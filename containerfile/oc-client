@@ -13,4 +13,4 @@ WORKDIR /root
 COPY ./ ./rhoso-gitops
 RUN ~/.ansible/bin/pip install --upgrade pip
 RUN ~/.ansible/bin/pip install -r ./rhoso-gitops/requirements.txt
-RUN ~/.ansible/bin/ansible-galaxy collection install -r ./rhoso-gitops/requirements.yml
+RUN ~/.ansible/bin/ansible-galaxy install -r ./rhoso-gitops/requirements.yml
