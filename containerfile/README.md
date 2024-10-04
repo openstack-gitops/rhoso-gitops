@@ -29,7 +29,7 @@ $ podman run --rm -ti \
     rhoso-gitops:latest bash
 ```
 
-If you want to access ansible, you can then run:
+To access Ansible, source the activation file to load the Python virtual environment:
 
 ```Bash
 # source .ansible/bin/activate
