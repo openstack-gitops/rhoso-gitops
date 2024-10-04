@@ -1,0 +1,16 @@
+# Requires a valid authentication for
+# registry.redhat.io
+FROM registry.redhat.io/openshift4/ose-cli:latest
+
+RUN dnf install -y python3.12 git-core && dnf clean all
+RUN update-alternatives --set python /usr/bin/python3.12 && \
+    update-alternatives --set python3 /usr/bin/python3.12
+
+RUN python3 -m venv ~/.ansible
+
+WORKDIR /root
+
+COPY ./ ./rhoso-gitops
+RUN ~/.ansible/bin/pip install --upgrade pip
+RUN ~/.ansible/bin/pip install -r ./rhoso-gitops/requirements.txt
+RUN ~/.ansible/bin/ansible-galaxy install -r ./rhoso-gitops/requirements.yml
