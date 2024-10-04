@@ -5,7 +5,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "-10"
   finalizers:
   - resources-finalizer.argocd.argoproj.io
-  name: openstack-prerequisites
+  name: openstack-operator
   namespace: openshift-gitops
 spec:
   destination:
