@@ -1,7 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
 
+# These patches will define the overlay for sync-waves within
+# GitOps-orchestrated RHOSO deployment.
 patches:
+
+# --- pre-install --
+  # create Namespaces first
   - target:
       kind: Namespace
     patch: |-
@@ -11,6 +16,7 @@ patches:
           argocd.argoproj.io/managed-by: openshift-gitops
           argocd.argoproj.io/sync-wave: "-30"
 
+  # set up the OperatorGroup for Operator deployments
   - target:
       kind: OperatorGroup
     patch: |-
@@ -19,6 +25,7 @@ patches:
         value:
           argocd.argoproj.io/sync-wave: "-20"
 
+  # Subscribe to the Operators required in our deployment
   - target:
       kind: Subscription
     patch: |-
@@ -27,6 +34,7 @@ patches:
         value:
           argocd.argoproj.io/sync-wave: "-10"
 
+# --- base install ---
   - target:
       kind: LVMCluster
     patch: |-
@@ -59,3 +67,69 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
 
+# --- RHOSO staged deployment ---
+
+  # Deploy NodeNetworkConfigurationPolicy early
+  - target:
+      group: nmstate.io
+      version: v1
+      kind: NodeNetworkConfigurationPolicy
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "1"
+
+  - target:
+      group: k8s.cni.cncf.io
+      version: v1
+      kind: NetworkAttachmentDefinition
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "2"
+
+  - target:
+      group: metallb.io
+      kind: IPAddressPool
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "3"
+
+  - target:
+      group: metallb.io
+      kind: L2Advertisement
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "4"
+
+  - target:
+      group: network.openstack.org
+      version: v1beta1
+      kind: NetConfig
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "5"
+
+  - target:
+      group: core.openstack.org
+      version: v1beta1
+      kind: OpenStackControlPlane
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "10"
