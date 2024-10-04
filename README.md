@@ -1,7 +1,7 @@
 # rhoso-gitops
 
 An implementation of Red Hat GitOps (GitOps, ArgoCD) for managing the
-deployment of Red Hat OpenStack Services for OpenShift (RHOSO).
+deployment of Red Hat OpenStack Services on OpenShift (RHOSO).
 
 **WARNING**: _Contents of this repository are a work in progress and not yet
 ready for usage in a production environment. The organization or contents of
@@ -15,7 +15,7 @@ this repository may change drastically at any time._
 * `base/`
     * contains base deployment knowledge not (yet) contained in the validated
       architectures repository in support of OpenStack deployments with RHOSO
-* `orchestration/`
+* `orchestration/` (deprecated)
     * contains the configuration to deploy for OpenShift GitOps (ArgoCD)
       for cluster-scoped management on both the hub cluster and managed cluster
 
@@ -26,12 +26,14 @@ applied directly with `oc apply -k <directory>`.
 
 Expected order of operations is:
 
-* (optional) Deploy RHACM and configure it so deployment of OpenShift clusters is possible (the hub cluster).
-* Deploy ArgoCD to the hub cluster or unmanaged cluster
-  * Use the `base/gitops/` directory to deploy Red Hat GitOps and the initial ArgoCD deployment
-* Create the base Applications from `applications/openstack-common` to the hub cluster
-* Create your `environments` in a private repository for deployment (TODO: provide working example)
-* Deploy `environments/`
+* (optional) Deploy Red Hat Advanced Cluster Manager (RHACM) and configure it
+  so deployment of OpenShift clusters is possible (the hub cluster).
+* Deploy ArgoCD to the hub cluster or unmanaged cluster.
+  * Use the `base/gitops/` directory to deploy Red Hat GitOps and the initial ArgoCD deployment.
+* Create the base Applications from `applications/` to the hub or unmanaged cluster.
+* Create your [environments](https://github.com/openstack-gitops/environments)
+  in a private repository for deployment.
+* Deploy `environments/`.
 
 ### Bootstrap Red Hat GitOps
 
@@ -64,7 +66,7 @@ Alternatively, deploy Red Hat GitOps and ArgoCD with Kustomize directly in stage
   ```
   $ oc create --save-config -k base/gitops/subscribe
   ```
-* Validate the Subscription has been completed. The subscription status should return :
+* Validate the Subscription has been completed. The subscription status should return:
   ```
   $ oc get subscription.operators.coreos.com/openshift-gitops-operator \
       --namespace openshift-gitops-operator -ojsonpath='{.status.state}'
@@ -78,11 +80,17 @@ Alternatively, deploy Red Hat GitOps and ArgoCD with Kustomize directly in stage
 
 ### Set up Red Hat Advanced Cluster Management for GitOps
 
-Configure Red Hat Advanced Cluster Management (RHACM) to support GitOps Applications for managed clusters.
+When using Red Hat Advanced Cluster Management (RHACM) to support GitOps
+Applications for managed clusters, we will configure the hub cluster in
+preparation for using GitOps to support managed cluster configuration.
+
+If you are using GitOps on an unmanaged cluster without RHACM, then this will
+be unnecessary.
 
 _Prerequisites_
 
-* You have installed and setup RHACM (hub cluster) for your hardware environment that will host the managed OpenShift deployment.
+* You have installed and setup RHACM (hub cluster) for your hardware
+  environment that will host the managed OpenShift deployment.
 * You are logged into the hub cluster as the kubeadmin user.
 * You have installed Red Hat GitOps.
 
@@ -96,7 +104,8 @@ _Procedure_
 
 ## Accessing the user interface for OpenShift GitOps
 
-You can view progress and management of the Applications by looking up the host address with `oc`.
+You can view progress and management of the Applications by looking up the host
+address with `oc`.
 
 _Procedure_
 
@@ -104,3 +113,15 @@ _Procedure_
   ```
   $ oc get route/openshift-gitops-server -nopenshift-gitops -ojsonpath='{.spec.host}'
   ```
+
+## Deploy Prerequisites
+
+Deploy the prerequisites for deployment of a RHOSO environment by creating the
+`openstack-prerequisites` GitOps Application.
+
+_Procedure_
+
+* Create the `openstack-prerequisites` GitOps Application:
+```
+$ oc create --save-config -k applications/base/prerequisites
+```
