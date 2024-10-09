@@ -6,8 +6,6 @@ items:
     name: openstack-operators
     namespace: openstack-operators
   spec:
-    targetNamespaces:
-    - openstack
     upgradeStrategy: Default
 kind: List
 metadata:
