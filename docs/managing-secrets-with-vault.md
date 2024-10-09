@@ -159,7 +159,7 @@ _Procedure_
 * Login to the OpenShift environment as a cluster-admin.
 * Create the Vault connection:
   ```yaml
-  $ oc create --save-config -f <<EOF
+  $ oc create --save-config -f - <<EOF
   apiVersion: secrets.hashicorp.com/v1beta1
   kind: VaultConnection
   metadata:
@@ -171,7 +171,7 @@ _Procedure_
   ```
 * Create the Vault authentication:
   ```yaml
-  $ oc create --save-config - <<EOF
+  $ oc create --save-config -f - <<EOF
   apiVersion: secrets.hashicorp.com/v1beta1
   kind: VaultAuth
   metadata:
