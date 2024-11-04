@@ -63,6 +63,8 @@
         namespace: openshift-gitops
       register: result_argocd
       until: result_argocd.resources[0].status.phase | d(None) == "Available"
+      retries: 12
+      delay: 10
 
     - name: Route to the ArgoCD interface
       ansible.builtin.debug:
