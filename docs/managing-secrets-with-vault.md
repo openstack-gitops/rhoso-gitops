@@ -55,6 +55,13 @@ $ openssl genrsa -out ca.key 4096
 $ openssl req -x509 -new -nodes -key ca.key -sha256 -days 1024 -out ca.crt
 ```
 
+_Inject our custom CA in the OCP internal trust store_
+```bash
+$ oc -n openshift-config create configmap vault-ca.crt --from-file ca-bundle.crt=ca.crt
+$ oc patch proxy/cluster --type=merge --patch='{"spec":{"trustedCA":{"name":"vault-ca.crt"}}}'
+```
+([doc source](https://docs.openshift.com/container-platform/4.17/security/certificates/updating-ca-bundle.html))
+
 _Create a certificate configuration `vault-csr.conf` (set `CN` accordingly)_
 ```
 [req]
