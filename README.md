@@ -29,7 +29,8 @@ Expected order of operations is:
 * (optional) Deploy Red Hat Advanced Cluster Manager (RHACM) and configure it
   so deployment of OpenShift clusters is possible (the hub cluster).
 * Deploy ArgoCD to the hub cluster or unmanaged cluster.
-  * Use the `base/gitops/` directory to deploy Red Hat GitOps and the initial ArgoCD deployment.
+  * Use the `base/initialize/gitops/` directory to deploy Red Hat OpenShift
+    GitOps and the initial ArgoCD deployment.
 * Create the base Applications from `applications/` to the hub or unmanaged cluster.
 * Create your [environments](https://github.com/openstack-gitops/environments)
   in a private repository for deployment.
@@ -57,14 +58,14 @@ Use the `deployment.playbook` script to automate the installation of Red Hat Git
 * Login to the OpenShift cluster as the kubeadmin user from the workstation.
 * Install the Red Hat GitOps Operator and deploy an ArgoCD instance with the `deployment.playbook` script:
   ```
-  $ ./base/gitops/deployment.playbook
+  $ ./base/initialize/gitops/deployment.playbook
   ```
 Alternatively, deploy Red Hat GitOps and ArgoCD with Kustomize directly in stages.
 
 * Login to the OpenShift cluster as the kubeadmin user from the workstation.
 * Install the Red Hat GitOps Operator:
   ```
-  $ oc create --save-config -k base/gitops/subscribe
+  $ oc create --save-config -k base/initialize/gitops/subscribe
   ```
 * Validate the Subscription has been completed. The subscription status should return:
   ```
@@ -75,7 +76,7 @@ Alternatively, deploy Red Hat GitOps and ArgoCD with Kustomize directly in stage
 
 * Create the ArgoCD instance:
   ```
-  $ oc create --save-config -k base/gitops/enable
+  $ oc create --save-config -k base/initialize/gitops/enable
   ```
 
 ### Set up Red Hat Advanced Cluster Management for GitOps
@@ -98,7 +99,7 @@ _Procedure_
 
 * Setup RHACM for RHOSO cluster deployments and placements with GitOps:
   ```
-  oc apply -k base/advanced-cluster-managment/
+  oc apply -k base/cluster/hub/advanced-cluster-managment/
   ```
 * Add your cluster and place it in the `rhoso` ClusterSet
 

@@ -6,7 +6,7 @@ resources:
   - subscribe/operatorgroup.yaml
   - subscribe/subscription.yaml
   - namespace-credentials.yaml
-  - ../baremetal-operator
+  - ../../common/baremetal-operator
   - enable/managedclusterset.yaml
   - enable/managedclustersetbinding.yaml
   - enable/placement.yaml
