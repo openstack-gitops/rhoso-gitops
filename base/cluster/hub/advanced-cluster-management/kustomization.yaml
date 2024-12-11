@@ -7,8 +7,3 @@ resources:
   - subscribe/subscription.yaml
   - namespace-credentials.yaml
   - ../../common/baremetal-operator
-  - enable/managedclusterset.yaml
-  - enable/managedclustersetbinding.yaml
-  - enable/placement.yaml
-  - enable/gitopscluster.yaml
-

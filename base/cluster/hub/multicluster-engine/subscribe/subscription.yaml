@@ -9,7 +9,7 @@ metadata:
   name: multicluster-engine
   namespace: multicluster-engine
 spec:
-  channel: stable-2.5
+  channel: stable-2.7
   config: {}
   installPlanApproval: Automatic
   name: multicluster-engine
