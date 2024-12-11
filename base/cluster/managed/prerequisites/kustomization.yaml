@@ -8,4 +8,4 @@ resources:
   - cluster-observability-operator
 
 components:
-  - ../gitops/components/annotations
+  - ../../../initialize/gitops/components/annotations

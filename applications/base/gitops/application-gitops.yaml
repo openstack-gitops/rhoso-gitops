@@ -12,7 +12,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: base/gitops/subscribe
+    path: base/initialize/gitops/subscribe
     repoURL: https://github.com/openstack-gitops/rhoso-gitops.git
     targetRevision: HEAD
     kustomize:
@@ -41,7 +41,7 @@ spec:
     server: https://kubernetes.default.svc
   project: default
   source:
-    path: base/gitops/enable
+    path: base/initialize/gitops/enable
     repoURL: https://github.com/openstack-gitops/rhoso-gitops.git
     targetRevision: HEAD
     kustomize:

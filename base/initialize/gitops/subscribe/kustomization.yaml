@@ -5,8 +5,9 @@ resources:
   - namespace.yaml
   - operatorgroup.yaml
   - subscription.yaml
-  - ../../console
+  - ../../../cluster/common/console
 
+# patch the default console contents and add the OpenShift Console GitOps interface
 patches:
   - target:
       group: operator.openshift.io
