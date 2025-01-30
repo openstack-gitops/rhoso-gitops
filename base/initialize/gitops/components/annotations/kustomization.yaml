@@ -133,3 +133,37 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "10"
+
+# --- Vault Connection Setup
+  - target:
+      group: secrets.hashicorp.com
+      version: v1beta1
+      kind: VaultConnection
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "1"
+
+  - target:
+      group: secrets.hashicorp.com
+      version: v1beta1
+      kind: VaultAuth
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "2"
+
+  - target:
+      group: secrets.hashicorp.com
+      version: v1beta1
+      kind: VaultStaticSecret
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "3"
