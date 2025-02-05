@@ -167,3 +167,15 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "3"
+
+# --- Advanced Cluster Manager setup
+  - target:
+      group: operator.open-cluster-management.io
+      version: v1
+      kind: MultiClusterHub
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "-10"
