@@ -21,7 +21,7 @@ spec:
               argocd.argoproj.io/managed-by: openshift-gitops
         target:
           kind: Namespace
-    path: base/cluster/common/prerequisites
+    path: base/cluster/managed/prerequisites/
     repoURL: https://github.com/openstack-gitops/rhoso-gitops.git
     targetRevision: HEAD
   syncPolicy:
