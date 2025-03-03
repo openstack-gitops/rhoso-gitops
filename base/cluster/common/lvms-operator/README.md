@@ -80,7 +80,7 @@ _Procedure_
   kind: Kustomization
 
   resources:
-    - https://github.com/openstack-gitops/rhoso-gitops/base/lvms-operator
+    - https://github.com/openstack-gitops/rhoso-gitops/base/cluster/common/lvms-operator
 
   patches:
     - target:
@@ -91,7 +91,7 @@ _Procedure_
       path: patch_lvmcluster_default.yaml
 
   components:
-    - https://github.com/openstack-gitops/rhoso-gitops/base/gitops/components/annotations
+    - https://github.com/openstack-gitops/rhoso-gitops/base/initialize/gitops/components/annotations
   EOF
   ```
 
