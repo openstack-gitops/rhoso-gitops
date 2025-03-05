@@ -114,7 +114,7 @@ _Procedure_
 
 * Subscribe to the Vault Secrets Operator:
   ```bash
-  $ oc create --save-config -k base/vault-secrets-operator
+  $ oc create --save-config -k https://github.com/openstack-gitops/rhoso-gitops/base/cluster/common/vault-secrets-operator
   ```
 
 _Additional Information_
