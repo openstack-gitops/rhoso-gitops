@@ -6,6 +6,7 @@ resources:
   - cert-manager-operator
   - metallb-operator
   - cluster-observability-operator
+  - namespace-openstack.yaml
 
 components:
   - ../../../initialize/gitops/components/annotations
