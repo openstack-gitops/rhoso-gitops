@@ -5,3 +5,4 @@ resources:
   - subscribe/namespace.yaml
   - subscribe/operatorgroup.yaml
   - subscribe/subscription.yaml
+  - subscribe/openstack.yaml
