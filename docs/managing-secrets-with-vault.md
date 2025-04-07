@@ -22,23 +22,23 @@ about deploying Vault on Kubernetes for production, see [Vault on Kubernetes
 deployment
 guide](https://developer.hashicorp.com/vault/tutorials/kubernetes/kubernetes-raft-deployment-guide).
 
-### Prerequisites
+_Prerequisites_
 
 * You're logged into the OpenShift Container Platform as a cluster adminstrator.
-* Your OCP has persistent volumes in some way.
+* Your OpenShift environment has storage available using Persistent Volume Claims.
 * You've installed `helm` version 3.15 or later.
 
-### Procedure
+_Procedure_
 
-_Add the Hashicorp Helm repository_
-```bash
-$ helm repo add hashicorp https://helm.releases.hashicorp.com
-```
+1. Add the Hashicorp Helm repository
+    ```bash
+    $ helm repo add hashicorp https://helm.releases.hashicorp.com
+    ```
 
-_Update all repositories_
-```bash
-$ helm repo update
-```
+2. Update all repositories
+    ```bash
+    $ helm repo update
+    ```
 
 #### Prepare TLS data
 
@@ -47,59 +47,59 @@ _A few preliminary notes_
     * You can also consume a certificate signed by any other CA. Be sure you set the correct alt_names and CN if you want to use
       any existing CA.
 
-_Create a custom Certificate Authority_
-```bash
-$ mkdir ~/vault-cert
-$ cd ~/vault-cert
-$ openssl genrsa -out ca.key 4096
-$ openssl req -x509 -new -nodes -key ca.key -sha256 -days 1024 -out ca.crt
-```
+1. Create a custom Certificate Authority
+   ```bash
+   $ mkdir ~/vault-cert
+   $ cd ~/vault-cert
+   $ openssl genrsa -out ca.key 4096
+   $ openssl req -x509 -new -nodes -key ca.key -sha256 -days 1024 -out ca.crt
+   ```
 
-_Inject our custom CA in the OCP internal trust store_
-```bash
-$ oc -n openshift-config create configmap vault-ca.crt --from-file ca-bundle.crt=ca.crt
-$ oc patch proxy/cluster --type=merge --patch='{"spec":{"trustedCA":{"name":"vault-ca.crt"}}}'
-```
-([doc source](https://docs.openshift.com/container-platform/4.17/security/certificates/updating-ca-bundle.html))
+2. Inject our custom CA in the OCP internal trust store
+   ```bash
+   $ oc -n openshift-config create configmap vault-ca.crt --from-file ca-bundle.crt=ca.crt
+   $ oc patch proxy/cluster --type=merge --patch='{"spec":{"trustedCA":{"name":"vault-ca.crt"}}}'
+   ```
+   ([doc source](https://docs.openshift.com/container-platform/4.17/security/certificates/updating-ca-bundle.html))
 
-_Create a certificate configuration `vault-csr.conf` (set `CN` accordingly)_
-```
-[req]
-default_bits = 4096
-prompt = no
-encrypt_key = yes
-default_md = sha256
-distinguished_name = kubelet_serving
-req_extensions = v3_req
-[kubelet_serving]
-O = system:nodes
-CN = system:node:*.vault.svc.ocp.openstack.lab
-```
+3. Create a certificate configuration `vault-csr.conf` (set `CN` accordingly)
+   ```
+   [req]
+   default_bits = 4096
+   prompt = no
+   encrypt_key = yes
+   default_md = sha256
+   distinguished_name = kubelet_serving
+   req_extensions = v3_req
+   [kubelet_serving]
+   O = system:nodes
+   CN = system:node:*.vault.svc.ocp.openstack.lab
+   ```
 
-_Create an openssl extention file `vault.ext` (set `DNS.2` accordingly)_
-```
-authorityKeyIdentifier=keyid,issuer
-basicConstraints=CA:FALSE
-keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
-subjectAltName = @alt_names
+4. Create an openssl extention file `vault.ext` (set `DNS.2` accordingly)
+   ```
+   authorityKeyIdentifier=keyid,issuer
+   basicConstraints=CA:FALSE
+   keyUsage = digitalSignature, nonRepudiation, keyEncipherment, dataEncipherment
+   subjectAltName = @alt_names
 
-[alt_names]
-DNS.1 = *.vault-internal
-DNS.2 = *.vault-internal.vault.svc.ocp.openstack.lab
-DNS.3 = *.vault
-IP.1 = 127.0.0.1
-```
+   [alt_names]
+   DNS.1 = *.vault-internal
+   DNS.2 = *.vault-internal.vault.svc.ocp.openstack.lab
+   DNS.3 = *.vault
+   IP.1 = 127.0.0.1
+   ```
 
-_Create the vault private key, get a CSR and signed certificate_
-```bash
-$ openssl genrsa -out vault.key 4096
-$ openssl req -new -key vault.key -out vault.csr -config vault-csr.conf
-$ openssl x509 -req -in vault.csr -CA ca.crt -CAkey ca.key \
-    -CAcreateserial -out vault.crt -days 365 -sha256 -extfile vault.ext
-```
+5. Create the vault private key, get a CSR and signed certificate
+   ```bash
+   $ openssl genrsa -out vault.key 4096
+   $ openssl req -new -key vault.key -out vault.csr -config vault-csr.conf
+   $ openssl x509 -req -in vault.csr -CA ca.crt -CAkey ca.key \
+       -CAcreateserial -out vault.crt -days 365 -sha256 -extfile vault.ext
+   ```
 
-_Expose TLS content in OpenShift_
-We now have to let Vault know about the certificate and, if wanted, HA/replicas.
+6. Expose TLS content in OpenShift
+   We now have to let Vault know about the certificate and, if wanted, HA/replicas.
     * Create a project for Vault:
       ```bash
       $ oc new-project vault
@@ -114,22 +114,22 @@ We now have to let Vault know about the certificate and, if wanted, HA/replicas.
 
 ##### Deploy Vault service
 
-_Create vault deployment `overrides.yml`_
-We'll instruct Vault to get 3 replicas, and use our TLS chain to encrypt all connections.
+1. _Create vault deployment `overrides.yml`
+   We'll instruct Vault to get 3 replicas, and use our TLS chain to encrypt all connections.
 
-You can fetch [our overrides.yml](./overrides.yml) and use it as-is. Refer to
-the [official documentation](https://developer.hashicorp.com/vault/docs/platform/k8s/helm/configuration)
-for more information about the options and features.
-  
-_Install Hashicorp Vault_
-  * Grant privileged access to the `vault` service:
-    ```bash
-    $ oc adm policy add-scc-to-user privileged -z vault -n vault
-    ```
-  * Deploy HashiCorp Vault with Helm, using the `overrides.yml` file:
-    ```bash
-    $ helm install vault hashicorp/vault --namespace=vault -f overrides.yml
-    ```
+   You can fetch [our overrides.yml](./overrides.yml) and use it as-is. Refer to
+   the [official documentation](https://developer.hashicorp.com/vault/docs/platform/k8s/helm/configuration)
+   for more information about the options and features.
+     
+   _Install Hashicorp Vault_
+     * Grant privileged access to the `vault` service:
+       ```bash
+       $ oc adm policy add-scc-to-user privileged -z vault -n vault
+       ```
+     * Deploy HashiCorp Vault with Helm, using the `overrides.yml` file:
+       ```bash
+       $ helm install vault hashicorp/vault --namespace=vault -f overrides.yml
+       ```
 
 ##### Post installation tasks
 We now have to initialize Vault, and aggregate the replicas.
@@ -137,6 +137,9 @@ We now have to initialize Vault, and aggregate the replicas.
 You must wait for all pods to be running:
 ```bash
 $ oc -n vault get pods
+```
+
+```
 NAME                                    READY   STATUS    RESTARTS   AGE
 vault-0                                 1/1     Running   0          38s
 vault-1                                 1/1     Running   0          37s
@@ -144,72 +147,81 @@ vault-2                                 1/1     Running   0          37s
 vault-agent-injector-84dd9666df-xmwwb   1/1     Running   0          38s
 ```
 
-_Initialize Vault_
-Warning: this is a one-time action!
-```bash
-$ oc exec -n vault vault-0 -- vault operator init \
-    -key-shares=1 \
-    -key-threshold=1 \
-    -format=json > ~/vault-cert/cluster-keys.json
-```
+1. Initialize Vault
+   Warning: this is a one-time action!
+   ```bash
+   $ oc exec -n vault vault-0 -- vault operator init \
+       -key-shares=1 \
+       -key-threshold=1 \
+       -format=json > ~/vault-cert/cluster-keys.json
+   ```
 
-Note: `cluster-keys.json` is to be stored securerly, since it contains access credentials
-to Vault.
+   > **Note**: `cluster-keys.json` is to be stored securerly, since it contains access credentials
+   > to Vault.
 
-_Unseal Vault on vault-0_
-```bash
-$ export VAULT_UNSEAL_KEY=$(jq -r ".unseal_keys_b64[]" ~/vault-cert/cluster-keys.json)
-$ oc exec -n vault vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
-```
+2. Unseal Vault on vault-0
+   ```bash
+   $ export VAULT_UNSEAL_KEY=$(jq -r ".unseal_keys_b64[]" ~/vault-cert/cluster-keys.json)
+   $ oc exec -n vault vault-0 -- vault operator unseal $VAULT_UNSEAL_KEY
+   ```
 
-_Get vault-1 in_
-```bash
-$ cat << 'EOF' | oc exec -n vault -it vault-1 -- /bin/sh
-vault operator raft join -address=https://vault-1.vault-internal:8200 -leader-ca-cert="$(cat /vault/userconfig/vault-ha-tls/vault.ca)" -leader-client-cert="$(cat /vault/userconfig/vault-ha-tls/vault.crt)" -leader-client-key="$(cat /vault/userconfig/vault-ha-tls/vault.key)" https://vault-0.vault-internal:8200
-EOF
-$ oc exec -n vault vault-1 -- vault operator unseal $VAULT_UNSEAL_KEY
-```
+3. Get vault-1 in
+   ```bash
+   $ cat << 'EOF' | oc exec -n vault -it vault-1 -- /bin/sh
+   vault operator raft join \
+     -address=https://vault-1.vault-internal:8200 -leader-ca-cert="$(cat /vault/userconfig/vault-ha-tls/vault.ca)" \
+     -leader-client-cert="$(cat /vault/userconfig/vault-ha-tls/vault.crt)" \
+     -leader-client-key="$(cat /vault/userconfig/vault-ha-tls/vault.key)" https://vault-0.vault-internal:8200
+   EOF
+   $ oc exec -n vault vault-1 -- vault operator unseal $VAULT_UNSEAL_KEY
+   ```
 
-_Get vault-2 in_
-```bash
-$ cat << 'EOF' | oc exec -n vault -it vault-2 -- /bin/sh
-vault operator raft join -address=https://vault-2.vault-internal:8200 -leader-ca-cert="$(cat /vault/userconfig/vault-ha-tls/vault.ca)" -leader-client-cert="$(cat /vault/userconfig/vault-ha-tls/vault.crt)" -leader-client-key="$(cat /vault/userconfig/vault-ha-tls/vault.key)" https://vault-0.vault-internal:8200
-EOF
-$ oc exec -n vault vault-2 -- vault operator unseal $VAULT_UNSEAL_KEY
-```
+4. Get vault-2 in
+   ```bash
+   $ cat << 'EOF' | oc exec -n vault -it vault-2 -- /bin/sh
+   vault operator raft join \
+     -address=https://vault-2.vault-internal:8200 \
+     -leader-ca-cert="$(cat /vault/userconfig/vault-ha-tls/vault.ca)" \
+     -leader-client-cert="$(cat /vault/userconfig/vault-ha-tls/vault.crt)" \
+     -leader-client-key="$(cat /vault/userconfig/vault-ha-tls/vault.key)" https://vault-0.vault-internal:8200
+   EOF
+   $ oc exec -n vault vault-2 -- vault operator unseal $VAULT_UNSEAL_KEY
+   ```
 
-_Get Vault service status_
-```bash
-$ oc -n vault exec vault-0 -- vault status
-Key                     Value
----                     -----
-Seal Type               shamir
-Initialized             true
-Sealed                  false
-Total Shares            1
-Threshold               1
-Version                 1.18.1
-Build Date              2024-10-29T14:21:31Z
-Storage Type            raft
-Cluster Name            vault-integrated-storage
-Cluster ID              16c48f5e-9c24-7f14-48e1-49b6a3d832b3
-HA Enabled              true
-HA Cluster              https://vault-0.vault-internal:8201
-HA Mode                 active
-Active Since            2024-11-13T09:45:25.636615131Z
-Raft Committed Index    65
-Raft Applied Index      65
-```
+5. Get Vault service status
+   ```bash
+   $ oc -n vault exec vault-0 -- vault status
+   ```
+   ```
+   Key                     Value
+   ---                     -----
+   Seal Type               shamir
+   Initialized             true
+   Sealed                  false
+   Total Shares            1
+   Threshold               1
+   Version                 1.18.1
+   Build Date              2024-10-29T14:21:31Z
+   Storage Type            raft
+   Cluster Name            vault-integrated-storage
+   Cluster ID              16c48f5e-9c24-7f14-48e1-49b6a3d832b3
+   HA Enabled              true
+   HA Cluster              https://vault-0.vault-internal:8201
+   HA Mode                 active
+   Active Since            2024-11-13T09:45:25.636615131Z
+   Raft Committed Index    65
+   Raft Applied Index      65
+   ```
 
-_Ensure Vault is working_
-You can try to authenticate against Vault, inject a secret, and fetch it from the CLI:
-```bash
-$ export CLUSTER_ROOT_TOKEN=$(jq -r ".root_token" ~/vault-cert/cluster-keys.json)
-$ oc exec -n vault vault-0 -- vault login $CLUSTER_ROOT_TOKEN
-$ oc exec -n vault vault-0 -- vault secrets enable -path=secret kv-v2
-$ oc exec -n vault vault-0 -- vault put secret/tls/apitest username="apiuser" password="supersecret
-$ oc exec -n vault vault-0 -- vault get secret/tls/apitest
-```
+6. Ensure Vault is working
+   You can try to authenticate against Vault, inject a secret, and fetch it from the CLI:
+   ```bash
+   $ export CLUSTER_ROOT_TOKEN=$(jq -r ".root_token" ~/vault-cert/cluster-keys.json)
+   $ oc exec -n vault vault-0 -- vault login $CLUSTER_ROOT_TOKEN
+   $ oc exec -n vault vault-0 -- vault secrets enable -path=secret kv-v2
+   $ oc exec -n vault vault-0 -- vault put secret/tls/apitest username="apiuser" password="supersecret
+   $ oc exec -n vault vault-0 -- vault get secret/tls/apitest
+   ```
 
 If you want to check the HTTPS API right now, you'll need to expose the service, and use the custom CA
 in cURL:
@@ -244,7 +256,7 @@ Vault specifically for the `openstack` namespace.
 
 _Procedure_
 
-* Enable the Kubernetes authentication method:
+ Enable the Kubernetes authentication method:
   ```bash
   $ oc exec vault-0 --namespace=vault -- vault auth enable kubernetes
   ```
