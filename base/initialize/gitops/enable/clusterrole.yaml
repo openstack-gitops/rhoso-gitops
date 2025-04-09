@@ -82,7 +82,15 @@ rules:
 - apiGroups:
   - operator.openstack.org
   resources:
-   - 'openstacks'
+  - 'openstacks'
+  verbs:
+  - '*'
+- apiGroups:
+  - dataplane.openstack.org
+  resources:
+  - 'openstackdataplanedeployments'
+  - 'openstackdataplanenodesets'
+  - 'openstackdataplaneservices'
   verbs:
   - '*'
 ---
