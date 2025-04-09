@@ -4,8 +4,8 @@ When [Providing secure access to Red Hat OpenStack Services on OpenShift
 services](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_preparing-rhocp-for-rhoso#proc_providing-secure-access-to-the-RHOSO-services_preparing)
 it's necessary to populate a `Secret` with contents used for authentication.
 
-Manging `Secret` contents when using GitOps requires extra considerations, as
-the sensitive data that exists in the Secret itself cannot be commited to a git
+Managing `Secret` contents when using GitOps requires extra considerations, as
+the sensitive data that exists in the Secret itself cannot be committed to a git
 repository.
 
 Use of HashiCorp Vault allows for storage of the sensitive contents separate of
@@ -13,7 +13,7 @@ the creation of the Secret objects required for OpenStack provisioning. Use of
 the Vault Secrets Operator makes taking the sensitive data stored in Vault and
 writes it to a Kubernetes native Secret.
 
-## Prepare TLS elements
+## Creating your custom Certificate Authorithy (CA)
 
 We must create a series of TLS elements to encrypt Vault client connections. In this example, the OCP domain is `ocp.openstack.lab`.
 
@@ -132,24 +132,22 @@ _Procedure_
         --from-file=vault.ca=~/vault-cert/ca.crt
    ```
 
-## Deploy Vault service
+## Deploying Vault service
 
-1. Create vault deployment `overrides.yml`
-   We'll instruct Vault to get 3 replicas, and use our TLS chain to encrypt all connections.
+We instruct Vault to get 3 replicas, and use our TLS chain to encrypt all connections.
 
-   You can fetch [our overrides.yml](./overrides.yml) and use it as-is. Refer to
-   the [official documentation](https://developer.hashicorp.com/vault/docs/platform/k8s/helm/configuration)
-   for more information about the options and features.
-     
-   _Install Hashicorp Vault_
-     * Grant privileged access to the `vault` service:
-       ```bash
-       oc adm policy add-scc-to-user privileged -z vault -n vault
-       ```
-     * Deploy HashiCorp Vault with Helm, using the `overrides.yml` file:
-       ```bash
-       helm install vault hashicorp/vault --namespace=vault -f overrides.yml
-       ```
+1. Create vault deployment `overrides.yml`  
+   You can fetch [our overrides.yml](./overrides.yml) and use it as-is. Refer to the [official documentation](https://developer.hashicorp.com/vault/docs/platform/k8s/helm/configuration) for more information about the options and features.
+
+2. Grant privileged access to the `vault` service:
+   ```bash
+   oc adm policy add-scc-to-user privileged -z vault -n vault
+   ```
+
+3. Deploy HashiCorp Vault with Helm, using the `overrides.yml` file:
+   ```bash
+   helm install vault hashicorp/vault --namespace=vault -f overrides.yml
+   ```
 
 ## Post installation tasks
 We now have to initialize Vault, and aggregate the replicas.
@@ -242,8 +240,7 @@ vault-agent-injector-84dd9666df-xmwwb   1/1     Running   0          38s
    Raft Committed Index    65
    Raft Applied Index      65
    ```
-2. Ensure Vault is working
-   You can try to authenticate against Vault, inject a secret, and fetch it from the CLI:
+2. Ensure Vault is working  
    a. Export CLUSTER_ROOT_TOKEN
    ```bash
    export CLUSTER_ROOT_TOKEN=$(jq -r ".root_token" ~/vault-cert/cluster-keys.json)
@@ -261,7 +258,7 @@ vault-agent-injector-84dd9666df-xmwwb   1/1     Running   0          38s
    oc exec -n vault vault-0 -- vault put \
         secret/tls/apitest username="apiuser" password="supersecret
    ```
-   e. Retrieve secret
+   e. Retrieve the secret
    ```bash
    oc exec -n vault vault-0 -- vault get secret/tls/apitest
    ```
