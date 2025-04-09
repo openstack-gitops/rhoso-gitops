@@ -69,6 +69,18 @@ patches:
 
 # --- RHOSO staged deployment ---
 
+  # Initialize OpenStackOperator
+  # Do it at wave 0 (default)
+  - target:
+      group: operator.openstack.org
+      version: v1beta1
+      kind: OpenStack
+    patch: |
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+
   # Deploy NodeNetworkConfigurationPolicy early
   - target:
       group: nmstate.io
