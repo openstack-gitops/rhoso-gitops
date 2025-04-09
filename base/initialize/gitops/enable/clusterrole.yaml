@@ -82,7 +82,7 @@ rules:
 - apiGroups:
   - operator.openstack.org
   resources:
-   - '*'
+   - 'openstacks'
   verbs:
   - '*'
 ---
