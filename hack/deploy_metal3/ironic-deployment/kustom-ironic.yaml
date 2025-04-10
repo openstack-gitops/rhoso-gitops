@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -62,223 +63,223 @@ spec:
         name: ironic
     spec:
       containers:
-      - env:
-        - name: MARIADB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              key: password
-              name: baremetal-operator-mariadb-password-ftkgc8tmkc
-        - name: RESTART_CONTAINER_CERTIFICATE_UPDATED
-          valueFrom:
-            configMapKeyRef:
-              key: RESTART_CONTAINER_CERTIFICATE_UPDATED
-              name: baremetal-operator-ironic-bmo-configmap-fm5ct4dkb8
-        image: quay.io/metal3-io/mariadb
-        imagePullPolicy: Always
-        livenessProbe:
-          exec:
-            command:
-            - sh
-            - -c
-            - mysqladmin status -uironic -p$(printenv MARIADB_PASSWORD)
-          failureThreshold: 10
-          initialDelaySeconds: 30
-          periodSeconds: 30
-          successThreshold: 1
-          timeoutSeconds: 10
-        name: mariadb
-        readinessProbe:
-          exec:
-            command:
-            - sh
-            - -c
-            - mysqladmin status -uironic -p$(printenv MARIADB_PASSWORD)
-          failureThreshold: 10
-          initialDelaySeconds: 30
-          periodSeconds: 30
-          successThreshold: 1
-          timeoutSeconds: 10
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          privileged: false
-          runAsGroup: 27
-          runAsUser: 27
-        volumeMounts:
-        - mountPath: /shared
-          name: ironic-data-volume
-        - mountPath: /certs/mariadb
-          name: cert-mariadb
-          readOnly: true
-        - mountPath: /certs/ca/mariadb
-          name: cert-mariadb-ca
-          readOnly: true
-      - command:
-        - /bin/runironic
-        env:
-        - name: MARIADB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              key: password
-              name: baremetal-operator-mariadb-password-ftkgc8tmkc
-        - name: IRONIC_USE_MARIADB
-          value: "true"
-        - name: IRONIC_REVERSE_PROXY_SETUP
-          value: "true"
-        envFrom:
-        - secretRef:
-            name: baremetal-operator-ironic-htpasswd-ggbkcg78h9
-        - configMapRef:
-            name: baremetal-operator-ironic-bmo-configmap-fm5ct4dkb8
-        image: quay.io/metal3-io/ironic
-        imagePullPolicy: Always
-        livenessProbe:
-          exec:
-            command:
-            - /bin/ironic-liveness
-          failureThreshold: 10
-          initialDelaySeconds: 30
-          periodSeconds: 30
-          successThreshold: 1
-          timeoutSeconds: 10
-        name: ironic
-        readinessProbe:
-          exec:
-            command:
-            - /bin/ironic-readiness
-          failureThreshold: 10
-          initialDelaySeconds: 30
-          periodSeconds: 30
-          successThreshold: 1
-          timeoutSeconds: 10
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          privileged: false
-          runAsGroup: 994
-          runAsUser: 997
-        volumeMounts:
-        - mountPath: /certs/ca/mariadb
-          name: cert-mariadb-ca
-          readOnly: true
-        - mountPath: /certs/ca/ironic
-          name: cert-ironic-ca
-          readOnly: true
-        - mountPath: /shared
-          name: ironic-data-volume
-      - command:
-        - /bin/runhttpd
-        env:
-        - name: IRONIC_REVERSE_PROXY_SETUP
-          value: "true"
-        envFrom:
-        - secretRef:
-            name: baremetal-operator-ironic-htpasswd-ggbkcg78h9
-        - configMapRef:
-            name: baremetal-operator-ironic-bmo-configmap-fm5ct4dkb8
-        image: quay.io/metal3-io/ironic
-        imagePullPolicy: Always
-        livenessProbe:
-          exec:
-            command:
-            - sh
-            - -c
-            - curl -sSfk https://127.0.0.1:6385
-          failureThreshold: 10
-          initialDelaySeconds: 30
-          periodSeconds: 30
-          successThreshold: 1
-          timeoutSeconds: 10
-        name: ironic-httpd
-        readinessProbe:
-          exec:
-            command:
-            - sh
-            - -c
-            - curl -sSfk https://127.0.0.1:6385
-          failureThreshold: 10
-          initialDelaySeconds: 30
-          periodSeconds: 30
-          successThreshold: 1
-          timeoutSeconds: 10
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          privileged: false
-          runAsGroup: 994
-          runAsUser: 997
-        volumeMounts:
-        - mountPath: /certs/ironic
-          name: cert-ironic
-          readOnly: true
-        - mountPath: /certs/ca/ironic
-          name: cert-ironic-ca
-          readOnly: true
-        - mountPath: /shared
-          name: ironic-data-volume
-      - command:
-        - /bin/runlogwatch.sh
-        image: quay.io/metal3-io/ironic
-        imagePullPolicy: Always
-        name: ironic-log-watch
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          privileged: false
-          runAsGroup: 994
-          runAsUser: 997
-        volumeMounts:
-        - mountPath: /shared
-          name: ironic-data-volume
+        - env:
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: baremetal-operator-mariadb-password-ftkgc8tmkc
+            - name: RESTART_CONTAINER_CERTIFICATE_UPDATED
+              valueFrom:
+                configMapKeyRef:
+                  key: RESTART_CONTAINER_CERTIFICATE_UPDATED
+                  name: baremetal-operator-ironic-bmo-configmap-fm5ct4dkb8
+          image: quay.io/metal3-io/mariadb
+          imagePullPolicy: Always
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mysqladmin status -uironic -p$(printenv MARIADB_PASSWORD)
+            failureThreshold: 10
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 10
+          name: mariadb
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - mysqladmin status -uironic -p$(printenv MARIADB_PASSWORD)
+            failureThreshold: 10
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            runAsGroup: 27
+            runAsUser: 27
+          volumeMounts:
+            - mountPath: /shared
+              name: ironic-data-volume
+            - mountPath: /certs/mariadb
+              name: cert-mariadb
+              readOnly: true
+            - mountPath: /certs/ca/mariadb
+              name: cert-mariadb-ca
+              readOnly: true
+        - command:
+            - /bin/runironic
+          env:
+            - name: MARIADB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: baremetal-operator-mariadb-password-ftkgc8tmkc
+            - name: IRONIC_USE_MARIADB
+              value: "true"
+            - name: IRONIC_REVERSE_PROXY_SETUP
+              value: "true"
+          envFrom:
+            - secretRef:
+                name: baremetal-operator-ironic-htpasswd-ggbkcg78h9
+            - configMapRef:
+                name: baremetal-operator-ironic-bmo-configmap-fm5ct4dkb8
+          image: quay.io/metal3-io/ironic
+          imagePullPolicy: Always
+          livenessProbe:
+            exec:
+              command:
+                - /bin/ironic-liveness
+            failureThreshold: 10
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 10
+          name: ironic
+          readinessProbe:
+            exec:
+              command:
+                - /bin/ironic-readiness
+            failureThreshold: 10
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            runAsGroup: 994
+            runAsUser: 997
+          volumeMounts:
+            - mountPath: /certs/ca/mariadb
+              name: cert-mariadb-ca
+              readOnly: true
+            - mountPath: /certs/ca/ironic
+              name: cert-ironic-ca
+              readOnly: true
+            - mountPath: /shared
+              name: ironic-data-volume
+        - command:
+            - /bin/runhttpd
+          env:
+            - name: IRONIC_REVERSE_PROXY_SETUP
+              value: "true"
+          envFrom:
+            - secretRef:
+                name: baremetal-operator-ironic-htpasswd-ggbkcg78h9
+            - configMapRef:
+                name: baremetal-operator-ironic-bmo-configmap-fm5ct4dkb8
+          image: quay.io/metal3-io/ironic
+          imagePullPolicy: Always
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - curl -sSfk https://127.0.0.1:6385
+            failureThreshold: 10
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 10
+          name: ironic-httpd
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - curl -sSfk https://127.0.0.1:6385
+            failureThreshold: 10
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 10
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            runAsGroup: 994
+            runAsUser: 997
+          volumeMounts:
+            - mountPath: /certs/ironic
+              name: cert-ironic
+              readOnly: true
+            - mountPath: /certs/ca/ironic
+              name: cert-ironic-ca
+              readOnly: true
+            - mountPath: /shared
+              name: ironic-data-volume
+        - command:
+            - /bin/runlogwatch.sh
+          image: quay.io/metal3-io/ironic
+          imagePullPolicy: Always
+          name: ironic-log-watch
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            runAsGroup: 994
+            runAsUser: 997
+          volumeMounts:
+            - mountPath: /shared
+              name: ironic-data-volume
       hostNetwork: true
       initContainers:
-      - command:
-        - /usr/local/bin/get-resource.sh
-        envFrom:
-        - configMapRef:
-            name: baremetal-operator-ironic-bmo-configmap-fm5ct4dkb8
-        image: quay.io/metal3-io/ironic-ipa-downloader
-        imagePullPolicy: Always
-        name: ironic-ipa-downloader
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          privileged: false
-          runAsGroup: 994
-          runAsUser: 997
-        volumeMounts:
-        - mountPath: /shared
-          name: ironic-data-volume
+        - command:
+            - /usr/local/bin/get-resource.sh
+          envFrom:
+            - configMapRef:
+                name: baremetal-operator-ironic-bmo-configmap-fm5ct4dkb8
+          image: quay.io/metal3-io/ironic-ipa-downloader
+          imagePullPolicy: Always
+          name: ironic-ipa-downloader
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            privileged: false
+            runAsGroup: 994
+            runAsUser: 997
+          volumeMounts:
+            - mountPath: /shared
+              name: ironic-data-volume
       securityContext:
         fsGroup: 994
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
       volumes:
-      - name: cert-mariadb
-        secret:
-          secretName: mariadb-cert
-      - name: cert-mariadb-ca
-        secret:
-          secretName: ironic-cacert
-      - name: cert-ironic-ca
-        secret:
-          secretName: ironic-cacert
-      - name: cert-ironic
-        secret:
-          secretName: ironic-cert
-      - emptyDir: {}
-        name: ironic-data-volume
+        - name: cert-mariadb
+          secret:
+            secretName: mariadb-cert
+        - name: cert-mariadb-ca
+          secret:
+            secretName: ironic-cacert
+        - name: cert-ironic-ca
+          secret:
+            secretName: ironic-cacert
+        - name: cert-ironic
+          secret:
+            secretName: ironic-cert
+        - emptyDir: {}
+          name: ironic-data-volume
 ---
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -288,7 +289,7 @@ metadata:
 spec:
   commonName: ironic-ca
   ipAddresses:
-  - 10.6.0.50
+    - 10.6.0.50
   isCA: true
   issuerRef:
     kind: Issuer
@@ -303,7 +304,7 @@ metadata:
 spec:
   commonName: ironic-cert
   ipAddresses:
-  - 10.6.0.50
+    - 10.6.0.50
   issuerRef:
     kind: Issuer
     name: baremetal-operator-ca-issuer
@@ -317,7 +318,7 @@ metadata:
 spec:
   commonName: mariadb-cert
   ipAddresses:
-  - 127.0.0.1
+    - 127.0.0.1
   issuerRef:
     kind: Issuer
     name: baremetal-operator-ca-issuer
