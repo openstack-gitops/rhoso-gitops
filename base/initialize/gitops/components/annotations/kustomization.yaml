@@ -1,11 +1,10 @@
+---
 apiVersion: kustomize.config.k8s.io/v1alpha1
 kind: Component
-
 # These patches will define the overlay for sync-waves within
 # GitOps-orchestrated RHOSO deployment.
 patches:
-
-# --- pre-install --
+  # --- pre-install --
   # create Namespaces first
   - target:
       kind: Namespace
@@ -15,7 +14,6 @@ patches:
         value:
           argocd.argoproj.io/managed-by: openshift-gitops
           argocd.argoproj.io/sync-wave: "-30"
-
   # set up the OperatorGroup for Operator deployments
   - target:
       kind: OperatorGroup
@@ -24,7 +22,6 @@ patches:
         path: /metadata/annotations
         value:
           argocd.argoproj.io/sync-wave: "-20"
-
   # Subscribe to the Operators required in our deployment
   - target:
       kind: Subscription
@@ -33,8 +30,7 @@ patches:
         path: /metadata/annotations
         value:
           argocd.argoproj.io/sync-wave: "-10"
-
-# --- base install ---
+    # --- base install ---
   - target:
       kind: LVMCluster
     patch: |-
@@ -42,7 +38,6 @@ patches:
         path: /metadata/annotations
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-
   - target:
       kind: ArgoCD
     patch: |-
@@ -50,7 +45,6 @@ patches:
         path: /metadata/annotations
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-
   - target:
       kind: NMState
     patch: |-
@@ -58,7 +52,6 @@ patches:
         path: /metadata/annotations
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-
   - target:
       kind: MetalLB
     patch: |-
@@ -66,9 +59,7 @@ patches:
         path: /metadata/annotations
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-
-# --- RHOSO staged deployment ---
-
+    # --- RHOSO staged deployment ---
   # Initialize OpenStackOperator
   # Do it at wave 0 (default)
   - target:
@@ -80,7 +71,6 @@ patches:
         path: /metadata/annotations
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-
   # Deploy NodeNetworkConfigurationPolicy early
   - target:
       group: nmstate.io
@@ -92,7 +82,6 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "1"
-
   - target:
       group: k8s.cni.cncf.io
       version: v1
@@ -103,7 +92,6 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "2"
-
   - target:
       group: metallb.io
       kind: IPAddressPool
@@ -113,7 +101,6 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "3"
-
   - target:
       group: metallb.io
       kind: L2Advertisement
@@ -123,7 +110,6 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "4"
-
   - target:
       group: network.openstack.org
       version: v1beta1
@@ -134,7 +120,6 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "5"
-
   - target:
       group: core.openstack.org
       version: v1beta1
@@ -145,8 +130,7 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "10"
-
-# --- Vault Connection Setup
+    # --- Vault Connection Setup
   - target:
       group: secrets.hashicorp.com
       version: v1beta1
@@ -157,7 +141,6 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "1"
-
   - target:
       group: secrets.hashicorp.com
       version: v1beta1
@@ -168,7 +151,6 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "2"
-
   - target:
       group: secrets.hashicorp.com
       version: v1beta1
@@ -179,8 +161,7 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "3"
-
-# --- Advanced Cluster Manager setup
+    # --- Advanced Cluster Manager setup
   - target:
       group: operator.open-cluster-management.io
       version: v1

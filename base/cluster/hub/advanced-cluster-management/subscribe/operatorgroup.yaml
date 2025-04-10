@@ -1,3 +1,4 @@
+---
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
@@ -8,5 +9,5 @@ metadata:
   namespace: open-cluster-management
 spec:
   targetNamespaces:
-  - open-cluster-management
+    - open-cluster-management
   upgradeStrategy: Default
