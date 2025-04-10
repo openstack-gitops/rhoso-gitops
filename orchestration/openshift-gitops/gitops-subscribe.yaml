@@ -1,3 +1,4 @@
+---
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -12,7 +13,7 @@ metadata:
   name: openshift-gitops-operator
 spec:
   finalizers:
-  - kubernetes
+    - kubernetes
 ---
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
