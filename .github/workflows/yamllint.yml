@@ -1,4 +1,12 @@
 ---
+name: file-consistency
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "**.yaml"
+      - "**.yml"
 jobs:
   yaml-lint:
     runs-on: ubuntu-latest
