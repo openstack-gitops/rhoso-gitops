@@ -1,3 +1,4 @@
+---
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
@@ -7,5 +8,5 @@ metadata:
   namespace: multicluster-engine
 spec:
   targetNamespaces:
-  - multicluster-engine
+    - multicluster-engine
   upgradeStrategy: Default

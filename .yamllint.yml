@@ -1,0 +1,12 @@
+---
+extends: default
+ignore:
+  - '*.md'
+  - '*.env'
+  - '*.txt'
+  - '*.sh'
+
+rules:
+  line-length:
+    max: 256
+    level: warning

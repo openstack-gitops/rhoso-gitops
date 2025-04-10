@@ -1,8 +1,9 @@
+---
 apiVersion: metal3.io/v1alpha1
 kind: Provisioning
 metadata:
   finalizers:
-  - provisioning.metal3.io
+    - provisioning.metal3.io
   name: provisioning-configuration
 spec:
   disableVirtualMediaTLS: true

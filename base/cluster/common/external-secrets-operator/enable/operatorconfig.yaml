@@ -1,3 +1,4 @@
+---
 apiVersion: operator.external-secrets.io/v1alpha1
 kind: OperatorConfig
 metadata:
@@ -5,7 +6,7 @@ metadata:
     operator-sdk/primary-resource: /externalsecret-validate
     operator-sdk/primary-resource-type: ValidatingWebhookConfiguration.admissionregistration.k8s.io
   finalizers:
-  - helm.sdk.operatorframework.io/uninstall-release
+    - helm.sdk.operatorframework.io/uninstall-release
   name: sample
   namespace: openshift-operators
 spec:

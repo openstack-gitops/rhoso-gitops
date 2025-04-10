@@ -1,8 +1,9 @@
+---
 apiVersion: argoproj.io/v1beta1
 kind: ArgoCD
 metadata:
   finalizers:
-  - argoproj.io/finalizer
+    - argoproj.io/finalizer
   name: openshift-gitops
   namespace: openshift-gitops
 spec:
@@ -93,248 +94,248 @@ spec:
       - TaskRun
       - PipelineRun
   resourceHealthChecks:
-  - check: |
-      hs = {}
-      hs.status = "Progressing"
-      hs.message = ""
-      if obj.status ~= nil then
-        if obj.status.state ~= nil then
-          if obj.status.state == "AtLatestKnown" then
-            hs.message = obj.status.state .. " - " .. obj.status.currentCSV
-            hs.status = "Healthy"
-          end
-        end
-      end
-      return hs
-    group: operators.coreos.com
-    kind: Subscription
-  - check: |
-      hs = {}
-      hs.status = "Progressing"
-      hs.message = ""
-      if obj.status ~= nil then
-        if obj.status.health ~= nil then
-          hs.status = obj.status.health.status
-          if obj.status.health.message ~= nil then
-            hs.message = obj.status.health.message
-          end
-        end
-      end
-      return hs
-    group: argoproj.io
-    kind: Application
-  - check: |
-      hs = {}
-      if obj.status ~= nil then
-        if obj.status.conditions ~= nil then
-          for i, condition in ipairs(obj.status.conditions) do
-            if condition.type == "OpenStackOperatorReadyCondition" and condition.status == "True" then
+    - check: |
+        hs = {}
+        hs.status = "Progressing"
+        hs.message = ""
+        if obj.status ~= nil then
+          if obj.status.state ~= nil then
+            if obj.status.state == "AtLatestKnown" then
+              hs.message = obj.status.state .. " - " .. obj.status.currentCSV
               hs.status = "Healthy"
-              hs.message = condition.message
-              return hs
             end
           end
         end
-      end
-      hs.status = "Progressing"
-      hs.message = "Waiting for OpenStackOperator to be ready"
-      return hs
-    group: operator.openstack.org
-    kind: OpenStack
-  - check: |
-      hs = {}
-      if obj.status ~= nil then
-        if obj.status.conditions ~= nil then
-          for i, condition in ipairs(obj.status.conditions) do
-            if condition.type == "Progressing" and condition.status == "True" then
-              hs.status = "Progressing"
-              hs.message = condition.message
-              return hs
+        return hs
+      group: operators.coreos.com
+      kind: Subscription
+    - check: |
+        hs = {}
+        hs.status = "Progressing"
+        hs.message = ""
+        if obj.status ~= nil then
+          if obj.status.health ~= nil then
+            hs.status = obj.status.health.status
+            if obj.status.health.message ~= nil then
+              hs.message = obj.status.health.message
             end
-            if condition.type == "Degraded" and condition.status == "True" then
-              hs.status = "Degraded"
-              hs.message = condition.message
-              return hs
+          end
+        end
+        return hs
+      group: argoproj.io
+      kind: Application
+    - check: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "OpenStackOperatorReadyCondition" and condition.status == "True" then
+                hs.status = "Healthy"
+                hs.message = condition.message
+                return hs
+              end
             end
-            if condition.type == "Available" and condition.status == "True" then
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Waiting for OpenStackOperator to be ready"
+        return hs
+      group: operator.openstack.org
+      kind: OpenStack
+    - check: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "Progressing" and condition.status == "True" then
+                hs.status = "Progressing"
+                hs.message = condition.message
+                return hs
+              end
+              if condition.type == "Degraded" and condition.status == "True" then
+                hs.status = "Degraded"
+                hs.message = condition.message
+                return hs
+              end
+              if condition.type == "Available" and condition.status == "True" then
+                hs.status = "Healthy"
+                hs.message = condition.message
+                return hs
+              end
+            end
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Waiting for NNCP to be SuccessfullyConfigured"
+        return hs
+      group: nmstate.io
+      kind: NodeNetworkConfigurationPolicy
+    - check: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.provisioning ~= nil then
+            if obj.status.provisioning.state ~= nil then
+              if obj.status.provisioning.state == "available" or obj.status.provisioning.state == "provisioned" then
+                hs.status = "Healthy"
+                hs.message = obj.status.provisioning.state
+                return hs
+              end
+            end
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Waiting for BareMetalHost to be available or provisioned"
+        return hs
+      group: metal3.io
+      kind: BareMetalHost
+    - check: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "Ready" and condition.status == "False" then
+                hs.status = "Progressing"
+                hs.message = condition.message
+                return hs
+              end
+              if condition.type == "Ready" and condition.status == "True" then
+                hs.status = "Healthy"
+                hs.message = condition.message
+                return hs
+              end
+            end
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Waiting for OpenStackProvisionServer to be Ready"
+        return hs
+      group: baremetal.openstack.org
+      kind: OpenStackProvisionServer
+    - check: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "Ready" and condition.status == "False" then
+                hs.status = "Progressing"
+                hs.message = condition.message
+                return hs
+              end
+              if condition.type == "Ready" and condition.status == "True" then
+                hs.status = "Healthy"
+                hs.message = condition.message
+                return hs
+              end
+            end
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Waiting for OpenStackControlPlane setup completion."
+        return hs
+      group: core.openstack.org
+      kind: OpenStackControlPlane
+    - check: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "SetupReady" and condition.status == "True" then
+                hs.status = "Healthy"
+                hs.message = condition.message
+                return hs
+              end
+            end
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Waiting for OpenStackDataPlaneNodeSet to be SetupReady."
+        return hs
+      group: dataplane.openstack.org
+      kind: OpenStackDataPlaneNodeSet
+    - check: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "Ready" and condition.status == "True" then
+                hs.status = "Healthy"
+                hs.message = condition.message
+                return hs
+              end
+            end
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Waiting for OpenStackDataPlaneDeployment to be Ready."
+        return hs
+      group: dataplane.openstack.org
+      kind: OpenStackDataPlaneDeployment
+    - check: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "Ready" and condition.status == "True" then
+                hs.status = "Healthy"
+                hs.message = condition.message
+                return hs
+              end
+            end
+          end
+        end
+        hs.status = "Progressing"
+        hs.message = "Waiting for SecretStore to be Ready."
+        return hs
+      group: external-secrets.io
+      kind: SecretStore
+    - check: |
+        hs = {}
+        hs.status = "Progressing"
+        hs.message = "Waiting for VaultConnection to be Valid."
+        if obj.status ~= nil then
+          if obj.status.valid ~= nil then
+            if obj.status.valid == true then
               hs.status = "Healthy"
-              hs.message = condition.message
-              return hs
+              hs.message = "VaultConnection is valid"
             end
           end
         end
-      end
-      hs.status = "Progressing"
-      hs.message = "Waiting for NNCP to be SuccessfullyConfigured"
-      return hs
-    group: nmstate.io
-    kind: NodeNetworkConfigurationPolicy
-  - check: |
-      hs = {}
-      if obj.status ~= nil then
-        if obj.status.provisioning ~= nil then
-          if obj.status.provisioning.state ~= nil then
-            if obj.status.provisioning.state == "available" or obj.status.provisioning.state == "provisioned" then
+        return hs
+      group: secrets.hashicorp.com
+      kind: VaultConnection
+    - check: |
+        hs = {}
+        hs.status = "Progressing"
+        hs.message = "Waiting for VaultAuth to be Valid."
+        if obj.status ~= nil then
+          if obj.status.valid ~= nil then
+            if obj.status.valid == true then
               hs.status = "Healthy"
-              hs.message = obj.status.provisioning.state
-              return hs
+              hs.message = "VaultAuth is valid"
             end
           end
         end
-      end
-      hs.status = "Progressing"
-      hs.message = "Waiting for BareMetalHost to be available or provisioned"
-      return hs
-    group: metal3.io
-    kind: BareMetalHost
-  - check: |
-      hs = {}
-      if obj.status ~= nil then
-        if obj.status.conditions ~= nil then
-          for i, condition in ipairs(obj.status.conditions) do
-            if condition.type == "Ready" and condition.status == "False" then
-              hs.status = "Progressing"
-              hs.message = condition.message
-              return hs
-            end
-            if condition.type == "Ready" and condition.status == "True" then
-              hs.status = "Healthy"
-              hs.message = condition.message
-              return hs
+        return hs
+      group: secrets.hashicorp.com
+      kind: VaultAuth
+    - check: |
+        hs = {}
+        if obj.status ~= nil then
+          if obj.status.conditions ~= nil then
+            for i, condition in ipairs(obj.status.conditions) do
+              if condition.type == "Complete" and condition.status == "True" then
+                hs.status = "Healthy"
+                hs.message = condition.message
+                return hs
+              end
             end
           end
         end
-      end
-      hs.status = "Progressing"
-      hs.message = "Waiting for OpenStackProvisionServer to be Ready"
-      return hs
-    group: baremetal.openstack.org
-    kind: OpenStackProvisionServer
-  - check: |
-      hs = {}
-      if obj.status ~= nil then
-        if obj.status.conditions ~= nil then
-          for i, condition in ipairs(obj.status.conditions) do
-            if condition.type == "Ready" and condition.status == "False" then
-              hs.status = "Progressing"
-              hs.message = condition.message
-              return hs
-            end
-            if condition.type == "Ready" and condition.status == "True" then
-              hs.status = "Healthy"
-              hs.message = condition.message
-              return hs
-            end
-          end
-        end
-      end
-      hs.status = "Progressing"
-      hs.message = "Waiting for OpenStackControlPlane setup completion."
-      return hs
-    group: core.openstack.org
-    kind: OpenStackControlPlane
-  - check: |
-      hs = {}
-      if obj.status ~= nil then
-        if obj.status.conditions ~= nil then
-          for i, condition in ipairs(obj.status.conditions) do
-            if condition.type == "SetupReady" and condition.status == "True" then
-              hs.status = "Healthy"
-              hs.message = condition.message
-              return hs
-            end
-          end
-        end
-      end
-      hs.status = "Progressing"
-      hs.message = "Waiting for OpenStackDataPlaneNodeSet to be SetupReady."
-      return hs
-    group: dataplane.openstack.org
-    kind: OpenStackDataPlaneNodeSet
-  - check: |
-      hs = {}
-      if obj.status ~= nil then
-        if obj.status.conditions ~= nil then
-          for i, condition in ipairs(obj.status.conditions) do
-            if condition.type == "Ready" and condition.status == "True" then
-              hs.status = "Healthy"
-              hs.message = condition.message
-              return hs
-            end
-          end
-        end
-      end
-      hs.status = "Progressing"
-      hs.message = "Waiting for OpenStackDataPlaneDeployment to be Ready."
-      return hs
-    group: dataplane.openstack.org
-    kind: OpenStackDataPlaneDeployment
-  - check: |
-      hs = {}
-      if obj.status ~= nil then
-        if obj.status.conditions ~= nil then
-          for i, condition in ipairs(obj.status.conditions) do
-            if condition.type == "Ready" and condition.status == "True" then
-              hs.status = "Healthy"
-              hs.message = condition.message
-              return hs
-            end
-          end
-        end
-      end
-      hs.status = "Progressing"
-      hs.message = "Waiting for SecretStore to be Ready."
-      return hs
-    group: external-secrets.io
-    kind: SecretStore
-  - check: |
-      hs = {}
-      hs.status = "Progressing"
-      hs.message = "Waiting for VaultConnection to be Valid."
-      if obj.status ~= nil then
-        if obj.status.valid ~= nil then
-          if obj.status.valid == true then
-            hs.status = "Healthy"
-            hs.message = "VaultConnection is valid"
-          end
-        end
-      end
-      return hs
-    group: secrets.hashicorp.com
-    kind: VaultConnection
-  - check: |
-      hs = {}
-      hs.status = "Progressing"
-      hs.message = "Waiting for VaultAuth to be Valid."
-      if obj.status ~= nil then
-        if obj.status.valid ~= nil then
-          if obj.status.valid == true then
-            hs.status = "Healthy"
-            hs.message = "VaultAuth is valid"
-          end
-        end
-      end
-      return hs
-    group: secrets.hashicorp.com
-    kind: VaultAuth
-  - check: |
-      hs = {}
-      if obj.status ~= nil then
-        if obj.status.conditions ~= nil then
-          for i, condition in ipairs(obj.status.conditions) do
-            if condition.type == "Complete" and condition.status == "True" then
-              hs.status = "Healthy"
-              hs.message = condition.message
-              return hs
-            end
-          end
-        end
-      end
-      hs.status = "Progressing"
-      hs.message = "Waiting for MultiClusterHub to be Complete."
-      return hs
-    group: operator.open-cluster-management.io
-    kind: MultiClusterHub
+        hs.status = "Progressing"
+        hs.message = "Waiting for MultiClusterHub to be Complete."
+        return hs
+      group: operator.open-cluster-management.io
+      kind: MultiClusterHub
   server:
     autoscale:
       enabled: false
