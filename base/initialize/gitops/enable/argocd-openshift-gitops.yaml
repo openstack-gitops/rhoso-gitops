@@ -100,7 +100,7 @@ spec:
         hs.message = ""
         if obj.status ~= nil then
           if obj.status.state ~= nil then
-            if obj.status.state == "AtLatestKnown" then
+            if obj.status.state == "AtLatestKnown" or obj.status.state == "UpgradePending" then
               hs.message = obj.status.state .. " - " .. obj.status.currentCSV
               hs.status = "Healthy"
             end
