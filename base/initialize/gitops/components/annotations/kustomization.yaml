@@ -14,6 +14,16 @@ patches:
         value:
           argocd.argoproj.io/managed-by: openshift-gitops
           argocd.argoproj.io/sync-wave: "-30"
+  # Create openstack namespace after openstack-operators namespace
+  - target:
+      kind: Namespace
+      name: openstack
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/managed-by: openshift-gitops
+          argocd.argoproj.io/sync-wave: "-29"
   # set up the OperatorGroup for Operator deployments
   - target:
       kind: OperatorGroup
