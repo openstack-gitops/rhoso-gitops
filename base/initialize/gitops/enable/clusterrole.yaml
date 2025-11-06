@@ -44,6 +44,12 @@ rules:
     verbs:
       - '*'
   - apiGroups:
+      - project.openshift.io
+    resources:
+      - projects
+    verbs:
+      - '*'
+  - apiGroups:
       - metal3.io
     resources:
       - '*'
