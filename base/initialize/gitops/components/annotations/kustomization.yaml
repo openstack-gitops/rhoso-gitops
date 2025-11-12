@@ -4,8 +4,7 @@ kind: Component
 # These patches will define the overlay for sync-waves within
 # GitOps-orchestrated RHOSO deployment.
 patches:
-  # --- pre-install --
-  # create Namespaces first
+  # --- Wave -30: Create general Namespaces (default for all namespaces) ---
   - target:
       kind: Namespace
     patch: |-
@@ -14,7 +13,7 @@ patches:
         value:
           argocd.argoproj.io/managed-by: openshift-gitops
           argocd.argoproj.io/sync-wave: "-30"
-  # Create openstack namespace after openstack-operators namespace
+  # --- Wave -29: Create openstack namespace after openstack-operators namespace ---
   - target:
       kind: Namespace
       name: openstack
@@ -24,7 +23,17 @@ patches:
         value:
           argocd.argoproj.io/managed-by: openshift-gitops
           argocd.argoproj.io/sync-wave: "-29"
-  # set up the OperatorGroup for Operator deployments
+  # --- Wave -31: Create openstack-operators namespace first (deleted last) ---
+  - target:
+      kind: Namespace
+      name: openstack-operators
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/managed-by: openshift-gitops
+          argocd.argoproj.io/sync-wave: "-31"
+  # --- Wave -20: Set up OperatorGroup and CatalogSource for Operator deployments ---
   - target:
       kind: OperatorGroup
     patch: |-
@@ -39,7 +48,7 @@ patches:
         path: /metadata/annotations
         value:
           argocd.argoproj.io/sync-wave: "-20"
-  # Subscribe to the Operators required in our deployment
+  # --- Wave -10: Subscribe to Operators and Advanced Cluster Manager setup ---
   - target:
       kind: Subscription
     patch: |-
@@ -47,7 +56,17 @@ patches:
         path: /metadata/annotations
         value:
           argocd.argoproj.io/sync-wave: "-10"
-    # --- base install ---
+  - target:
+      group: operator.open-cluster-management.io
+      version: v1
+      kind: MultiClusterHub
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "-10"
+  # --- Wave 0 (default): Base infrastructure and OpenStack operator initialization ---
   - target:
       kind: LVMCluster
     patch: |-
@@ -69,17 +88,7 @@ patches:
         path: /metadata/annotations
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-  - target:
-      kind: MetalLB
-    patch: |-
-      - op: add
-        path: /metadata/annotations
-        value:
-          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-          argocd.argoproj.io/sync-wave: "1"
-    # --- RHOSO staged deployment ---
-  # Initialize OpenStackOperator
-  # Do it at wave 0 (default)
+          argocd.argoproj.io/sync-wave: "0"
   - target:
       group: operator.openstack.org
       version: v1beta1
@@ -89,7 +98,15 @@ patches:
         path: /metadata/annotations
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-  # Deploy NodeNetworkConfigurationPolicy early
+  # --- Wave 1: MetalLB, network policies, and Vault connection ---
+  - target:
+      kind: MetalLB
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "1"
   - target:
       group: nmstate.io
       version: v1
@@ -101,6 +118,17 @@ patches:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "1"
   - target:
+      group: secrets.hashicorp.com
+      version: v1beta1
+      kind: VaultConnection
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "1"
+  # --- Wave 2: Network attachment definitions and Vault authentication ---
+  - target:
       group: k8s.cni.cncf.io
       version: v1
       kind: NetworkAttachmentDefinition
@@ -111,55 +139,6 @@ patches:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "2"
   - target:
-      group: metallb.io
-      kind: IPAddressPool
-    patch: |-
-      - op: add
-        path: /metadata/annotations
-        value:
-          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-          argocd.argoproj.io/sync-wave: "3"
-  - target:
-      group: metallb.io
-      kind: L2Advertisement
-    patch: |-
-      - op: add
-        path: /metadata/annotations
-        value:
-          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-          argocd.argoproj.io/sync-wave: "4"
-  - target:
-      group: network.openstack.org
-      version: v1beta1
-      kind: NetConfig
-    patch: |-
-      - op: add
-        path: /metadata/annotations
-        value:
-          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-          argocd.argoproj.io/sync-wave: "5"
-  - target:
-      group: core.openstack.org
-      version: v1beta1
-      kind: OpenStackControlPlane
-    patch: |-
-      - op: add
-        path: /metadata/annotations
-        value:
-          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-          argocd.argoproj.io/sync-wave: "10"
-    # --- Vault Connection Setup
-  - target:
-      group: secrets.hashicorp.com
-      version: v1beta1
-      kind: VaultConnection
-    patch: |-
-      - op: add
-        path: /metadata/annotations
-        value:
-          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-          argocd.argoproj.io/sync-wave: "1"
-  - target:
       group: secrets.hashicorp.com
       version: v1beta1
       kind: VaultAuth
@@ -169,6 +148,16 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "2"
+  # --- Wave 3: MetalLB IP pools and Vault secrets ---
+  - target:
+      group: metallb.io
+      kind: IPAddressPool
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "3"
   - target:
       group: secrets.hashicorp.com
       version: v1beta1
@@ -179,14 +168,57 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "3"
-    # --- Advanced Cluster Manager setup
+  # --- Wave 4: MetalLB L2 advertisement ---
   - target:
-      group: operator.open-cluster-management.io
-      version: v1
-      kind: MultiClusterHub
+      group: metallb.io
+      kind: L2Advertisement
     patch: |-
       - op: add
         path: /metadata/annotations
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
-          argocd.argoproj.io/sync-wave: "-10"
+          argocd.argoproj.io/sync-wave: "4"
+  # --- Wave 5: OpenStack network configuration ---
+  - target:
+      group: network.openstack.org
+      version: v1beta1
+      kind: NetConfig
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "5"
+  # --- Wave 10: OpenStack ControlPlane deployment ---
+  - target:
+      group: core.openstack.org
+      version: v1beta1
+      kind: OpenStackControlPlane
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "10"
+  # --- Wave 15: OpenStack DataPlane NodeSet ---
+  - target:
+      group: dataplane.openstack.org
+      version: v1beta1
+      kind: OpenStackDataPlaneNodeSet
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "15"
+  # --- Wave 20: OpenStack DataPlane Deployment (deployed last, deleted first) ---
+  - target:
+      group: dataplane.openstack.org
+      version: v1beta1
+      kind: OpenStackDataPlaneDeployment
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "20"
