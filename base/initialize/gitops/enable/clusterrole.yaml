@@ -41,6 +41,8 @@ rules:
       - ""
     resources:
       - secrets
+      - persistentvolumeclaims
+      - pods
     verbs:
       - '*'
   - apiGroups:
@@ -84,6 +86,8 @@ rules:
       - secrets.hashicorp.com
     resources:
       - 'vaultstaticsecrets'
+      - 'vaultconnections'
+      - 'vaultauths'
     verbs:
       - '*'
   - apiGroups:
