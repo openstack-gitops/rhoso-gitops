@@ -98,6 +98,7 @@ patches:
         path: /metadata/annotations
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "-5"
   # --- Wave 1: MetalLB, network policies, and Vault connection ---
   - target:
       kind: MetalLB
