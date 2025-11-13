@@ -199,7 +199,7 @@ patches:
       - op: add
         path: /metadata/annotations
         value:
-          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true,PrunePropagationPolicy=foreground
           argocd.argoproj.io/sync-wave: "10"
   # --- Wave 15: OpenStack DataPlane NodeSet ---
   - target:
