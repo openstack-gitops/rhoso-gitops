@@ -41,6 +41,14 @@ rules:
       - ""
     resources:
       - secrets
+      - persistentvolumeclaims
+      - pods
+    verbs:
+      - '*'
+  - apiGroups:
+      - project.openshift.io
+    resources:
+      - projects
     verbs:
       - '*'
   - apiGroups:
@@ -78,6 +86,8 @@ rules:
       - secrets.hashicorp.com
     resources:
       - 'vaultstaticsecrets'
+      - 'vaultconnections'
+      - 'vaultauths'
     verbs:
       - '*'
   - apiGroups:
