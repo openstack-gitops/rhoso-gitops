@@ -338,6 +338,18 @@ spec:
         return hs
       group: operator.open-cluster-management.io
       kind: MultiClusterHub
+    - check: |
+        hs = {}
+        if obj.status and obj.status.ready == true then
+          hs.status = "Healthy"
+          hs.message = "LVMCluster is ready"
+          return hs
+        end
+        hs.status = "Progressing"
+        hs.message = "Waiting for LVMCluster to be ready"
+        return hs
+      group: lvms.topolvm.io
+      kind: LVMCluster
   server:
     autoscale:
       enabled: false
