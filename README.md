@@ -45,16 +45,32 @@ HashiCorp Vault is used to store secrets, and VaultStaticSecret are used to
 pull those secrets into OCP. 
 
 **Procedure**
-1. Create the subscription:
+1. Create the subscription using ArgoCD:
     ```shell
-    oc apply -k resources/vault-secret-operator
+    oc apply -f applications/vault-secrets-operator.yaml
     ```
 
 **Links**
 * [Learn more about VSO](https://developer.hashicorp.com/vault/docs/deploy/kubernetes/vso).
 * [VSO on catalog.redhat.com](https://catalog.redhat.com/en/software/containers/hashicorp/vault-secrets-operator-bundle/64ddcd189d40d16b88133fd8)
 
+
 ## Consume proposed components
+
+### Base controlplane
+
+Provides the base for IPAddressPool, L2Advertisement, NetworkAttachementDefinition,
+NetConfig NodeNetworkConfigurationPolicy and OpenStackControlPlane on a 3-master OCP cluster.
+
+The CR are extracted from the
+[RHOSO official documentation](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_creating-the-control-plane)
+
+### Base dataplane
+
+Provides the base for the OpenStackDataplaneNodeSet and OpenStackDataPlaneDeployment.
+
+The CRs are extracted from the
+[RHOSO official documentation](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_creating-the-data-plane)
 
 ### ArgoCD sync-wave annotation
 These annotations enable ArgoCD to determine the order that resources are created for the whole RHOSO cloud.

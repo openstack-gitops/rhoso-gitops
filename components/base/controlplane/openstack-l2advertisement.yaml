@@ -1,0 +1,45 @@
+# source documentation: https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_preparing-rhoso-networks_preparing#proc_preparing-RHOCP-for-RHOSO-network-VIPs_preparing_networks
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: internalapi
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - internalapi
+  interfaces:
+    - internalapi
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: ctlplane
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - ctlplane
+  interfaces:
+    - enp6s0
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: storage
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - storage
+  interfaces:
+    - storage
+---
+apiVersion: metallb.io/v1beta1
+kind: L2Advertisement
+metadata:
+  name: tenant
+  namespace: metallb-system
+spec:
+  ipAddressPools:
+    - tenant
+  interfaces:
+    - tenant

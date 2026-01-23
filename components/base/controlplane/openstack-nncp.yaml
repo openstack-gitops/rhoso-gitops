@@ -1,0 +1,218 @@
+# source documentation: https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_preparing-rhoso-networks_preparing#proc_preparing-RHOCP-with-isolated-network-interfaces_preparing_networks
+# NOTE: slightly modified to result in 3 nodes being configured. The documentation only provides a single NNCP object.
+---
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: osp-enp6s0-worker-0
+spec:
+  desiredState:
+    interfaces:
+      - description: internalapi vlan interface
+        ipv4:
+          address:
+            - ip: 172.17.0.10
+              prefix-length: 24
+          enabled: true
+          dhcp: false
+        ipv6:
+          enabled: false
+        name: internalapi
+        state: up
+        type: vlan
+        vlan:
+          base-iface: enp6s0
+          id: 20
+          reorder-headers: true
+      - description: storage vlan interface
+        ipv4:
+          address:
+            - ip: 172.18.0.10
+              prefix-length: 24
+          enabled: true
+          dhcp: false
+        ipv6:
+          enabled: false
+        name: storage
+        state: up
+        type: vlan
+        vlan:
+          base-iface: enp6s0
+          id: 21
+          reorder-headers: true
+      - description: tenant vlan interface
+        ipv4:
+          address:
+            - ip: 172.19.0.10
+              prefix-length: 24
+          enabled: true
+          dhcp: false
+        ipv6:
+          enabled: false
+        name: tenant
+        state: up
+        type: vlan
+        vlan:
+          base-iface: enp6s0
+          id: 22
+          reorder-headers: true
+      - description: Configuring enp6s0
+        ipv4:
+          address:
+            - ip: 192.168.122.10
+              prefix-length: 24
+          enabled: true
+          dhcp: false
+        ipv6:
+          enabled: false
+        mtu: 1500
+        name: enp6s0
+        state: up
+        type: ethernet
+  nodeSelector:
+    kubernetes.io/hostname: worker-0
+    node-role.kubernetes.io/worker: ""
+---
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: osp-enp6s0-worker-1
+spec:
+  desiredState:
+    interfaces:
+      - description: internalapi vlan interface
+        ipv4:
+          address:
+            - ip: 172.17.0.11
+              prefix-length: 24
+          enabled: true
+          dhcp: false
+        ipv6:
+          enabled: false
+        name: internalapi
+        state: up
+        type: vlan
+        vlan:
+          base-iface: enp6s0
+          id: 20
+          reorder-headers: true
+      - description: storage vlan interface
+        ipv4:
+          address:
+            - ip: 172.18.0.11
+              prefix-length: 24
+          enabled: true
+          dhcp: false
+        ipv6:
+          enabled: false
+        name: storage
+        state: up
+        type: vlan
+        vlan:
+          base-iface: enp6s0
+          id: 21
+          reorder-headers: true
+      - description: tenant vlan interface
+        ipv4:
+          address:
+            - ip: 172.19.0.11
+              prefix-length: 24
+          enabled: true
+          dhcp: false
+        ipv6:
+          enabled: false
+        name: tenant
+        state: up
+        type: vlan
+        vlan:
+          base-iface: enp6s0
+          id: 22
+          reorder-headers: true
+      - description: Configuring enp6s0
+        ipv4:
+          address:
+            - ip: 192.168.122.11
+              prefix-length: 24
+          enabled: true
+          dhcp: false
+        ipv6:
+          enabled: false
+        mtu: 1500
+        name: enp6s0
+        state: up
+        type: ethernet
+  nodeSelector:
+    kubernetes.io/hostname: worker-1
+    node-role.kubernetes.io/worker: ""
+---
+apiVersion: nmstate.io/v1
+kind: NodeNetworkConfigurationPolicy
+metadata:
+  name: osp-enp6s0-worker-2
+spec:
+  desiredState:
+    interfaces:
+      - description: internalapi vlan interface
+        ipv4:
+          address:
+            - ip: 172.17.0.12
+              prefix-length: 24
+          enabled: true
+          dhcp: false
+        ipv6:
+          enabled: false
+        name: internalapi
+        state: up
+        type: vlan
+        vlan:
+          base-iface: enp6s0
+          id: 20
+          reorder-headers: true
+      - description: storage vlan interface
+        ipv4:
+          address:
+            - ip: 172.18.0.12
+              prefix-length: 24
+          enabled: true
+          dhcp: false
+        ipv6:
+          enabled: false
+        name: storage
+        state: up
+        type: vlan
+        vlan:
+          base-iface: enp6s0
+          id: 21
+          reorder-headers: true
+      - description: tenant vlan interface
+        ipv4:
+          address:
+            - ip: 172.19.0.12
+              prefix-length: 24
+          enabled: true
+          dhcp: false
+        ipv6:
+          enabled: false
+        name: tenant
+        state: up
+        type: vlan
+        vlan:
+          base-iface: enp6s0
+          id: 22
+          reorder-headers: true
+      - description: Configuring enp6s0
+        ipv4:
+          address:
+            - ip: 192.168.122.12
+              prefix-length: 24
+          enabled: true
+          dhcp: false
+        ipv6:
+          enabled: false
+        mtu: 1500
+        name: enp6s0
+        state: up
+        type: ethernet
+  nodeSelector:
+    kubernetes.io/hostname: worker-2
+    node-role.kubernetes.io/worker: ""

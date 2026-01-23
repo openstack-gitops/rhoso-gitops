@@ -1,0 +1,74 @@
+---
+apiVersion: dataplane.openstack.org/v1beta1
+kind: OpenStackDataPlaneNodeSet
+metadata:
+  name: preprovisioned-nodeset
+  namespace: openstack
+spec:
+  env:
+    - name: ANSIBLE_FORCE_COLOR
+      value: "True"
+  networkAttachments:
+    - ctlplane
+  preProvisioned: true
+  nodeTemplate:
+    ansibleSSHPrivateKeySecret: dataplane-ansible-ssh-private-key-secret
+    managementNetwork: ctlplane
+    ansible:
+      ansibleUser: cloud-admin
+      ansiblePort: 22
+      ansibleVarsFrom:
+        - secretRef:
+            name: subscription-manager
+        - secretRef:
+            name: redhat-registry
+      ansibleVars:
+        edpm_bootstrap_command: ""
+        rhc_release: 9.4
+        rhc_repositories:
+          - {name: "*", state: disabled}
+          - {name: "rhel-9-for-x86_64-baseos-eus-rpms", state: enabled}
+          - {name: "rhel-9-for-x86_64-appstream-eus-rpms", state: enabled}
+          - {name: "rhel-9-for-x86_64-highavailability-eus-rpms", state: enabled}
+          - {name: "fast-datapath-for-rhel-9-x86_64-rpms", state: enabled}
+          - {name: "rhoso-18.0-for-rhel-9-x86_64-rpms", state: enabled}
+          - {name: "rhceph-7-tools-for-rhel-9-x86_64-rpms", state: enabled}
+        edpm_bootstrap_release_version_package: []
+        edpm_network_config_os_net_config_mappings: {}
+        neutron_physical_bridge_name: br-ex
+        neutron_public_interface_name: eth0
+        ctlplane_dns_nameservers:
+          - 192.168.122.80
+        edpm_network_config_template: |
+          ---
+          {% set mtu_list = [ctlplane_mtu] %}
+          {% for network in nodeset_networks %}
+          {{ mtu_list.append(lookup('vars', networks_lower[network] ~ '_mtu')) }}
+          {%- endfor %}
+          {% set min_viable_mtu = mtu_list | max %}
+          network_config:
+          - type: ovs_bridge
+            name: {{ neutron_physical_bridge_name }}
+            mtu: {{ min_viable_mtu }}
+            use_dhcp: false
+            dns_servers: {{ ctlplane_dns_nameservers }}
+            domain: {{ dns_search_domains }}
+            addresses:
+            - ip_netmask: {{ ctlplane_ip }}/{{ ctlplane_cidr }}
+            routes: {{ ctlplane_host_routes }}
+            members:
+            - type: interface
+              name: nic1
+              mtu: {{ min_viable_mtu }}
+              # force the MAC address of the bridge to this interface
+              primary: true
+          {% for network in nodeset_networks %}
+            - type: vlan
+              mtu: {{ lookup('vars', networks_lower[network] ~ '_mtu') }}
+              vlan_id: {{ lookup('vars', networks_lower[network] ~ '_vlan_id') }}
+              addresses:
+              - ip_netmask:
+                  {{ lookup('vars', networks_lower[network] ~ '_ip') }}/{{ lookup('vars', networks_lower[network] ~ '_cidr') }}
+              routes: {{ lookup('vars', networks_lower[network] ~ '_host_routes') }}
+          {% endfor %}
+  nodes: {}
