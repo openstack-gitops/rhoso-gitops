@@ -2,8 +2,8 @@
 apiVersion: dataplane.openstack.org/v1beta1
 kind: OpenStackDataPlaneDeployment
 metadata:
-  name: data-plane-deploy
+  name: dp-deploy-01
   namespace: openstack
 spec:
   nodeSets:
-    - preprovisioned-nodeset
+    - example-nodeset

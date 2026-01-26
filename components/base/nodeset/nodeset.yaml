@@ -2,7 +2,7 @@
 apiVersion: dataplane.openstack.org/v1beta1
 kind: OpenStackDataPlaneNodeSet
 metadata:
-  name: preprovisioned-nodeset
+  name: example-nodeset
   namespace: openstack
 spec:
   env:
