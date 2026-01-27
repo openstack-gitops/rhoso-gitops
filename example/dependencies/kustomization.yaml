@@ -1,0 +1,7 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+components:
+  - https://github.com/openstack-k8s-operators/architecture/lib/olm-deps?ref=7da5f2e1dc2bfce99e269b0017783679ca405d8c
+  - https://github.com/openstack-gitops/rhoso-gitops/components/argocd/annotations?ref=cleaning
