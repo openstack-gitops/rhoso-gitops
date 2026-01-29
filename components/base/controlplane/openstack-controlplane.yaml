@@ -140,7 +140,8 @@ spec:
       keystoneEndpoint: default
       glanceAPIs:
         default:
-          replicas: 0 # Configure back end; set to 3 when deploying service
+          type: single
+          replicas: 1
           override:
             service:
               internal:
