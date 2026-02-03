@@ -4,6 +4,6 @@ kind: Kustomization
 
 components:
   - https://github.com/openstack-gitops/rhoso-gitops/components/argocd/annotations?ref=cleaning
-  - https://github.com/openstack-gitops/rhoso-gitops/components/base/controlplane?ref=cleaning
+  - https://github.com/openstack-gitops/rhoso-gitops/components/rhoso/controlplane?ref=cleaning
 
 # Add needed patches according to your infrastructure
