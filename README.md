@@ -54,6 +54,86 @@ pull those secrets into OCP.
 * [Learn more about VSO](https://developer.hashicorp.com/vault/docs/deploy/kubernetes/vso).
 * [VSO on catalog.redhat.com](https://catalog.redhat.com/en/software/containers/hashicorp/vault-secrets-operator-bundle/64ddcd189d40d16b88133fd8)
 
+## ArgoCD orchestration principles
+
+### Sync-waves
+
+We’re using sync-waves annotations for specific jobs and actions.
+
+The range -20;20 is reserved.
+
+### Healthchecks
+
+TBD
+
+## Application responsibilities and content
+
+### openstack-operator
+
+#### Purpose
+
+Installs the foundational OpenStack operators required for the deployment. Covers [Installation Documentation Chapter 1](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_installing-and-preparing-the-openstack-operator) and part of [Installation Documentation Chapter 2](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_preparing-rhocp-for-rhoso#proc_creating-the-openstack-namespace_preparing)
+
+#### Key resources
+
+* **Namespaces:** `openstack`, `openstack-operators`  
+* **Operator Subscription:** OpenStack operator from Red Hat CDN  
+* **RBAC:** Install plan approver service account and roles  
+* **Job:** `approve-openstack-installplan` to "imperatively" accept the `install_plan` created by `OLM` and wait for its completion.
+
+### openstack-operator-cr
+
+#### Purpose
+
+Creates the main OpenStack custom resource that defines the overall OpenStack deployment configuration. Covers [Installation Documentation Chapter 1](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_installing-and-preparing-the-openstack-operator).
+
+#### Key resources
+
+* **OpenStack CR:** Primary configuration object in `openstack-operators` namespace
+
+### openstack-networks
+
+#### Purpose
+
+Create underlying networks for controlplane and dataplane. Covers [Installation Documentation Chapter 3](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_preparing-rhoso-networks_preparing).
+
+#### Key resources
+
+* [3.2.1. Preparing RHOCP with isolated network interfaces](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html-single/deploying_red_hat_openstack_services_on_openshift/index#proc_preparing-RHOCP-with-isolated-network-interfaces_preparing_networks): for `NodeNetworkConfigurationPolicies` resources  
+* [3.2.2. Attaching service pods to the isolated networks](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html-single/deploying_red_hat_openstack_services_on_openshift/index#proc_attaching-service-pods-to-the-isolated-networks_preparing_networks): for `NetworkAttachmentDefinitions` resources  
+* [3.2.3. Preparing RHOCP for RHOSO network VIPS](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html-single/deploying_red_hat_openstack_services_on_openshift/index#proc_preparing-RHOCP-for-RHOSO-network-VIPs_preparing_networks) for `L2Advertisements` and `IPAdrressPool` resources  
+* [3.3. CREATING THE DATA PLANE NETWORK](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html-single/deploying_red_hat_openstack_services_on_openshift/index#proc_creating-the-data-plane-network_preparing_networks): for `NetConfig` resources
+
+### openstack-controlplane
+
+#### Purpose
+
+Deploys and configures `OpenStackControlPlane` resource. Covers [Installation Documentation Chapter 4](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_creating-the-control-plane)
+
+#### Key resources
+
+* `OpenStackControlPlane`
+
+### openstack-dataplane
+
+#### Purpose
+
+Deploys and configures the OpenStack data plane nodes. Covers [Installation Documentation Chapter 5](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_creating-the-data-plane)
+
+#### Key resources
+
+* `OpenStackDataPlaneNodeSet`  
+* `OpenStackDataPlaneDeployment`
+
+## What’s NOT covered by ArgoCD applications yet
+
+### Dependencies installation
+
+Dependencies such as `MetalLB`, `NMState` and `Cert-Manager` are not deployed nor managed using ArgoCD Application yet.
+
+### Secret management and creation
+
+Secrets are to be stored within a secure service, such as HashiCorp Vault, and never in Git. Our main focus for now is on the RHOSO application slicing, we will provide an ArgoCD Application definition later.
 
 ## Consume proposed components
 
