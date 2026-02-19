@@ -1,4 +1,6 @@
-# source documentation: https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_preparing-rhoso-networks_preparing#proc_preparing-RHOCP-with-isolated-network-interfaces_preparing_networks
+# source documentation:
+# https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/
+# deploying_red_hat_openstack_services_on_openshift/assembly_preparing-rhoso-networks_preparing#proc_preparing-RHOCP-with-isolated-network-interfaces_preparing_networks
 # NOTE: slightly modified to result in 3 nodes being configured. The documentation only provides a single NNCP object.
 ---
 apiVersion: nmstate.io/v1

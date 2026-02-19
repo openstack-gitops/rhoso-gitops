@@ -31,12 +31,12 @@ spec:
       cinderBackup:
         networkAttachments:
           - storage
-        replicas: 0 # backend needs to be configured to activate the service
+        replicas: 0  # backend needs to be configured to activate the service
       cinderVolumes:
         volume1:
           networkAttachments:
             - storage
-          replicas: 0 # backend needs to be configured to activate the service
+          replicas: 0  # backend needs to be configured to activate the service
   nova:
     apiOverride:
       route: {}

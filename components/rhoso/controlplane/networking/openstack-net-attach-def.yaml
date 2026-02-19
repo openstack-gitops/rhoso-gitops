@@ -1,4 +1,6 @@
-# source documentation: https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_preparing-rhoso-networks_preparing#proc_attaching-service-pods-to-the-isolated-networks_preparing_networks
+# source documentation:
+# https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/
+# deploying_red_hat_openstack_services_on_openshift/assembly_preparing-rhoso-networks_preparing#proc_attaching-service-pods-to-the-isolated-networks_preparing_networks
 ---
 apiVersion: k8s.cni.cncf.io/v1
 kind: NetworkAttachmentDefinition
