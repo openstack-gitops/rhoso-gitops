@@ -8,7 +8,7 @@ metadata:
   name: internalapi
   namespace: openstack
 spec:
-  config: |
+  config: |-
     {
       "cniVersion": "0.3.1",
       "name": "internalapi",
@@ -28,7 +28,7 @@ metadata:
   name: ctlplane
   namespace: openstack
 spec:
-  config: |
+  config: |-
     {
       "cniVersion": "0.3.1",
       "name": "ctlplane",
@@ -48,7 +48,7 @@ metadata:
   name: storage
   namespace: openstack
 spec:
-  config: |
+  config: |-
     {
       "cniVersion": "0.3.1",
       "name": "storage",

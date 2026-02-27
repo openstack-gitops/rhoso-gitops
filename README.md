@@ -3,7 +3,7 @@
 This repository contains an implementation of Red Hat GitOps (GitOps, ArgoCD) for managing the
 deployment of Red Hat OpenStack Services on OpenShift (RHOSO).
 
-**WARNING**: _This repositoy is provided as a Developer Preview for testing environments only, 
+**WARNING**: _This repository is provided as a Developer Preview for testing environments only, 
 before all features have been implemented and tested. Therefore, some functionality may be absent, 
 incomplete, or not work as expected, and is subject to change until the official release. 
 Red Hat encourages customers to use the Developer Preview release to provide feedback._
@@ -19,7 +19,7 @@ a fixed reference `?ref=VALUE`, where `VALUE` is a hash or a tag.
 We provide a light playbook to facilitate the operator deployment and
 subsequent ArgoCD instance configuration.
 
-[Read the playbook documentation](./openshift-gitops.deploy).
+[Read the playbook documentation](./openshift-gitops.deploy/README.md).
 
 ### Option 2: Deploy manually with `oc apply` commands
 1. Create the namespace, operatorgroup and subscription:

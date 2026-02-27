@@ -39,7 +39,7 @@ spec:
         neutron_public_interface_name: eth0
         ctlplane_dns_nameservers:
           - 192.168.122.80
-        edpm_network_config_template: |
+        edpm_network_config_template: |-
           ---
           {% set mtu_list = [ctlplane_mtu] %}
           {% for network in nodeset_networks %}
