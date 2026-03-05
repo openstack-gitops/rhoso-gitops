@@ -1,0 +1,16 @@
+---
+# https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html-single/optimizing_infrastructure_resource_utilization/index#deploy-optimize-exist-control-plane_deploy-optmz
+apiVersion: core.openstack.org/v1beta1
+kind: OpenStackControlPlane
+metadata:
+  name: openstack-control-plane
+spec:
+  watcher:
+    enabled: true
+    template:
+      decisionengineServiceTemplate:
+        customServiceConfig: |-
+          [watcher_cluster_data_model_collectors.compute]
+          period = 60
+          [watcher_cluster_data_model_collectors.storage]
+          period = 60

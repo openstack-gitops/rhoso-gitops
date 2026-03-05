@@ -1,128 +1,189 @@
-# rhoso-gitops
+# Deploying and managing Red Hat OpenStack Services on OpenShift with GitOps
 
-An implementation of Red Hat GitOps (GitOps, ArgoCD) for managing the
+This repository contains an implementation of Red Hat GitOps (GitOps, ArgoCD) for managing the
 deployment of Red Hat OpenStack Services on OpenShift (RHOSO).
 
-**WARNING**: _Contents of this repository are a work in progress and not yet
-ready for usage in a production environment. The organization or contents of
-this repository may change drastically at any time._
+**WARNING**: _This repository is provided as a Developer Preview for testing environments only, 
+before all features have been implemented and tested. Therefore, some functionality may be absent, 
+incomplete, or not work as expected, and is subject to change until the official release. 
+Red Hat encourages customers to use the Developer Preview release to provide feedback._
 
-## Repository Layout
+## Prerequisites: Use pinned resources
 
-* `applications/`
-    * contains the base GitOps Operator (ArgoCD) Application manifests for
-      ArgoCD to manage push-install from the hub cluster to the managed cluster
-* `base/`
-    * contains base deployment knowledge not (yet) contained in the validated
-      architectures repository in support of OpenStack deployments with RHOSO
-* `orchestration/` (deprecated)
-    * contains the configuration to deploy for OpenShift GitOps (ArgoCD)
-      for cluster-scoped management on both the hub cluster and managed cluster
+In your `kustomization.yaml` and related resources, make sure to use
+a fixed reference `?ref=VALUE`, where `VALUE` is a hash or a tag.
 
-## Deployment
+## Deploy the OpenShift GitOps Operator
 
-Manifests are managed with _kustomize_ (https://kustomize.io/) and can be
-applied directly with `oc apply -k <directory>`.
+### Option 1: Deploy automatically with the included helper playbook
+We provide a light playbook to facilitate the operator deployment and
+subsequent ArgoCD instance configuration.
 
-Expected order of operations is:
+[Read the playbook documentation](./openshift-gitops.deploy/README.md).
 
-* (optional) Deploy Red Hat Advanced Cluster Manager (RHACM) and configure it
-  so deployment of OpenShift clusters is possible (the hub cluster).
-* Deploy ArgoCD to the hub cluster or unmanaged cluster.
-  * Use the `base/initialize/gitops/` directory to deploy Red Hat OpenShift
-    GitOps and the initial ArgoCD deployment.
-* Create the base Applications from `applications/` to the hub or unmanaged cluster.
-* Create your [environments](https://github.com/openstack-gitops/environments)
-  in a private repository for deployment.
-* Deploy `environments/`.
+### Option 2: Deploy manually with `oc apply` commands
+1. Create the namespace, operatorgroup and subscription:
+    ```shell
+    oc apply -k openshift-gitops.deploy/subscribe
+    ```
+1. Ensure that the namespace is present:
+    ```shell
+    oc get namespace openshift-gitops
+    ```
+1. Configure the RBAC and ArgoCD instance:
+    ```shell
+    oc apply -k openshift-gitops.deploy/enable
+    ```
+1. Ensure that the ArgoCD instance is running:
+    ```shell
+    oc -n openshift-gitops get argocd/openshift-gitops
+    ```
 
-### Bootstrap Red Hat GitOps
+## Deploy the Vault Secrets Operator (VSO)
 
-You must first install Red Hat GitOps (GitOps) to provide the automation system
-for deploying RHOSO. Installation of GitOps can be done on a hub cluster or an
-unmanaged cluster. If installed on the hub cluster, you can use a GitOps
-Application to deploy GitOps on the managed cluster. If you are not using a hub
-cluster, then installation of GitOps on the unmanaged cluster must done first.
+HashiCorp Vault is used to store secrets, and VaultStaticSecret are used to
+pull those secrets into OCP. 
 
-_Prerequisites_
+**Procedure**
+1. Create the subscription using ArgoCD:
+    ```shell
+    oc apply -f applications/vault-secrets-operator.yaml
+    ```
 
-* You have installed Ansible on the workstation.
-* You have installed the Ansible collection `kubernetes.core.k8s`.
-* You have installed Kustomize on the workstation.
-* You have logged into the OpenShift cluster as the kubeadmin user you want GitOps to be deployed to.
+**Links**
+* [Learn more about VSO](https://developer.hashicorp.com/vault/docs/deploy/kubernetes/vso).
+* [VSO on catalog.redhat.com](https://catalog.redhat.com/en/software/containers/hashicorp/vault-secrets-operator-bundle/64ddcd189d40d16b88133fd8)
 
-_Procedure_
+## ArgoCD orchestration principles
 
-Use the `deployment.playbook` script to automate the installation of Red Hat GitOps with Ansible and Kustomize.
+### Sync-waves
 
-* Login to the OpenShift cluster as the kubeadmin user from the workstation.
-* Install the Red Hat GitOps Operator and deploy an ArgoCD instance with the `deployment.playbook` script:
-  ```
-  $ ./base/initialize/gitops/deployment.playbook
-  ```
-Alternatively, deploy Red Hat GitOps and ArgoCD with Kustomize directly in stages.
+We’re using sync-waves annotations for specific jobs and actions.
 
-* Login to the OpenShift cluster as the kubeadmin user from the workstation.
-* Install the Red Hat GitOps Operator:
-  ```
-  $ oc create --save-config -k base/initialize/gitops/subscribe
-  ```
-* Validate the Subscription has been completed. The subscription status should return:
-  ```
-  $ oc get subscription.operators.coreos.com/openshift-gitops-operator \
-      --namespace openshift-gitops-operator -ojsonpath='{.status.state}'
-  ```
-* When the value returned is `AtLastKnown`, then continue by deploying and ArgoCD instance.
+The range -20;20 is reserved.
 
-* Create the ArgoCD instance:
-  ```
-  $ oc create --save-config -k base/initialize/gitops/enable
-  ```
+### Healthchecks
 
-### Set up Red Hat Advanced Cluster Management for GitOps
+TBD
 
-When using Red Hat Advanced Cluster Management (RHACM) to support GitOps
-Applications for managed clusters, we will configure the hub cluster in
-preparation for using GitOps to support managed cluster configuration.
+## Application responsibilities and content
 
-If you are using GitOps on an unmanaged cluster without RHACM, then this will
-be unnecessary.
+### openstack-operator
 
-_Prerequisites_
+#### Purpose
 
-* You have installed and setup RHACM (hub cluster) for your hardware
-  environment that will host the managed OpenShift deployment.
-* You are logged into the hub cluster as the kubeadmin user.
-* You have installed Red Hat GitOps.
+Installs the foundational OpenStack operators required for the deployment. Covers [Installation Documentation Chapter 1](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_installing-and-preparing-the-openstack-operator) and part of [Installation Documentation Chapter 2](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_preparing-rhocp-for-rhoso#proc_creating-the-openstack-namespace_preparing)
 
-_Procedure_
+#### Key resources
 
-* Setup RHACM for RHOSO cluster deployments and placements with GitOps:
-  ```
-  oc apply -k base/cluster/hub/advanced-cluster-managment/
-  ```
-* Add your cluster and place it in the `rhoso` ClusterSet
+* **Namespaces:** `openstack`, `openstack-operators`  
+* **Operator Subscription:** OpenStack operator from Red Hat CDN  
+* **RBAC:** Install plan approver service account and roles  
+* **Job:** `approve-openstack-installplan` to "imperatively" accept the `install_plan` created by `OLM` and wait for its completion.
 
-## Accessing the user interface for OpenShift GitOps
+### openstack-operator-cr
 
-You can view progress and management of the Applications by looking up the host
-address with `oc`.
+#### Purpose
 
-_Procedure_
+Creates the main OpenStack custom resource that defines the overall OpenStack deployment configuration. Covers [Installation Documentation Chapter 1](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_installing-and-preparing-the-openstack-operator).
 
-* Look up the host address of the OpenShift GitOps user interface:
-  ```
-  $ oc get route/openshift-gitops-server -nopenshift-gitops -ojsonpath='{.spec.host}'
-  ```
+#### Key resources
 
-## Deploy Prerequisites
+* **OpenStack CR:** Primary configuration object in `openstack-operators` namespace
 
-Deploy the prerequisites for deployment of a RHOSO environment by creating the
-`openstack-prerequisites` GitOps Application.
+### openstack-networks
 
-_Procedure_
+#### Purpose
 
-* Create the `openstack-prerequisites` GitOps Application:
-```
-$ oc create --save-config -k applications/base/prerequisites
-```
+Create underlying networks for controlplane and dataplane. Covers [Installation Documentation Chapter 3](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_preparing-rhoso-networks_preparing).
+
+#### Key resources
+
+* [3.2.1. Preparing RHOCP with isolated network interfaces](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html-single/deploying_red_hat_openstack_services_on_openshift/index#proc_preparing-RHOCP-with-isolated-network-interfaces_preparing_networks): for `NodeNetworkConfigurationPolicies` resources  
+* [3.2.2. Attaching service pods to the isolated networks](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html-single/deploying_red_hat_openstack_services_on_openshift/index#proc_attaching-service-pods-to-the-isolated-networks_preparing_networks): for `NetworkAttachmentDefinitions` resources  
+* [3.2.3. Preparing RHOCP for RHOSO network VIPS](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html-single/deploying_red_hat_openstack_services_on_openshift/index#proc_preparing-RHOCP-for-RHOSO-network-VIPs_preparing_networks) for `L2Advertisements` and `IPAdrressPool` resources  
+* [3.3. CREATING THE DATA PLANE NETWORK](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html-single/deploying_red_hat_openstack_services_on_openshift/index#proc_creating-the-data-plane-network_preparing_networks): for `NetConfig` resources
+
+### openstack-controlplane
+
+#### Purpose
+
+Deploys and configures `OpenStackControlPlane` resource. Covers [Installation Documentation Chapter 4](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_creating-the-control-plane)
+
+#### Key resources
+
+* `OpenStackControlPlane`
+
+### openstack-dataplane
+
+#### Purpose
+
+Deploys and configures the OpenStack data plane nodes. Covers [Installation Documentation Chapter 5](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_creating-the-data-plane)
+
+#### Key resources
+
+* `OpenStackDataPlaneNodeSet`  
+* `OpenStackDataPlaneDeployment`
+
+## What’s NOT covered by ArgoCD applications yet
+
+### Dependencies installation
+
+Dependencies such as `MetalLB`, `NMState` and `Cert-Manager` are not deployed nor managed using ArgoCD Application yet.
+
+### Secret management and creation
+
+Secrets are to be stored within a secure service, such as HashiCorp Vault, and never in Git. Our main focus for now is on the RHOSO application slicing, we will provide an ArgoCD Application definition later.
+
+## Consume proposed components
+
+### Base controlplane
+
+Provides the base for IPAddressPool, L2Advertisement, NetworkAttachementDefinition,
+NetConfig NodeNetworkConfigurationPolicy and OpenStackControlPlane on a 3-master OCP cluster.
+
+The CR are extracted from the
+[RHOSO official documentation](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_creating-the-control-plane)
+
+### Base dataplane
+
+Provides the base for the OpenStackDataplaneNodeSet and OpenStackDataPlaneDeployment.
+
+The CRs are extracted from the
+[RHOSO official documentation](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_creating-the-data-plane)
+
+### ArgoCD sync-wave annotation
+These annotations enable ArgoCD to determine the order that resources are created for the whole RHOSO cloud.
+[Learn more about sync-waves](https://argo-cd.readthedocs.io/en/stable/user-guide/sync-waves/)
+
+**Example usage**
+1. Directly within the Application definition:
+    ```yaml
+    apiVersion: argoproj.io/v1alpha1
+    kind: Application
+    metadata:
+    # [...]
+    spec:
+      project: "default"
+      source:
+        repoURL: "..."
+        targetRevision: "..."
+        path: "..."
+        kustomize:
+          components:
+            -  https://github.com/openstack-gitops/rhoso-gitops/components/argocd/annotations?ref=TAG
+    ```
+1. From within an overlay or base:
+    ```yaml
+    apiVersion: kustomize.config.k8s.io/v1beta1
+    kind: Kustomization
+    components:
+      - https://github.com/openstack-gitops/rhoso-gitops/components/argocd/annotations?ref=TAG
+    # [...]
+    ```
+
+## External resources
+
+1. [Official RHOSO documentation](https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0)
+1. [Official openshift-gitops documentation](https://www.redhat.com/en/technologies/cloud-computing/openshift/gitops)
+1. [Official ArgoCD documentation](https://argo-cd.readthedocs.io/en/stable/)

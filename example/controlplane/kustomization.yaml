@@ -1,0 +1,15 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+components:
+  # Remote refs (for CI/ArgoCD):
+  - https://github.com/openstack-gitops/rhoso-gitops/components/argocd/annotations?ref=cleaning
+  - https://github.com/openstack-gitops/rhoso-gitops/components/rhoso/controlplane?ref=cleaning
+  - https://github.com/openstack-gitops/rhoso-gitops/components/rhoso/controlplane/services/watcher?ref=cleaning
+  # Local paths (for "kustomize build" testing):
+  # - ../../components/argocd/annotations
+  # - ../../components/rhoso/controlplane
+  # - ../../components/rhoso/controlplane/services/watcher
+
+# Add needed patches according to your infrastructure
