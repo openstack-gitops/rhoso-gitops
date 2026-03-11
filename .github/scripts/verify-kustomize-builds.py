@@ -8,7 +8,6 @@ the end if any component failed.
 
 from __future__ import annotations
 
-import re
 import subprocess
 import sys
 from dataclasses import dataclass
@@ -19,9 +18,6 @@ KUSTOMIZATION_FILES = ("kustomization.yaml", "kustomization.yml", "Kustomization
 RHOSO_COMPONENTS_ROOT = Path("components/rhoso")
 EXAMPLES_ROOT = Path("example")
 BUILD_TEST_DIR = Path(".build-test")
-RHOSO_GITOPS_URL_PATTERN = re.compile(
-    r"github\.com/openstack-gitops/rhoso-gitops/components/([^?]+)"
-)
 
 
 @dataclass
@@ -86,7 +82,7 @@ def discover_rhoso_components(repo_root: Path) -> list[BuildTestCase]:
 
 
 def discover_examples(repo_root: Path) -> list[BuildTestCase]:
-    """Discover example overlays and extract their rhoso component refs."""
+    """Discover all example overlays. No filtering - test every example as committed."""
     cases: list[BuildTestCase] = []
     examples_root = repo_root / EXAMPLES_ROOT
 
@@ -97,12 +93,7 @@ def discover_examples(repo_root: Path) -> list[BuildTestCase]:
         if not example_dir.is_dir():
             continue
 
-        kustomization_path = _find_kustomization_in_dir(example_dir)
-        if kustomization_path is None:
-            continue
-
-        component_paths = _parse_example_components(kustomization_path, repo_root)
-        if not component_paths:
+        if _find_kustomization_in_dir(example_dir) is None:
             continue
 
         rel_example = example_dir.relative_to(repo_root)
@@ -111,7 +102,7 @@ def discover_examples(repo_root: Path) -> list[BuildTestCase]:
         cases.append(
             BuildTestCase(
                 id=id_str,
-                component_paths=component_paths,
+                component_paths=[],  # Unused: we build directly from source_directory
                 build_dir_name=f"example-{slug}",
                 source_directory=example_dir,
             )
@@ -138,50 +129,6 @@ def _find_kustomization_in_dir(directory: Path) -> Path | None:
     return None
 
 
-def _parse_example_components(kustomization_path: Path, repo_root: Path) -> list[Path]:
-    """Parse example kustomization and extract local rhoso component paths."""
-    import yaml
-
-    try:
-        content = kustomization_path.read_text()
-        data = yaml.safe_load(content)
-    except (OSError, yaml.YAMLError):
-        return []
-
-    components = data.get("components") or []
-    local_paths: list[Path] = []
-
-    for item in components:
-        if not isinstance(item, str):
-            continue
-
-        # Extract path from rhoso-gitops URLs, filter argocd and external
-        match = RHOSO_GITOPS_URL_PATTERN.search(item)
-        if match:
-            component_rel = match.group(1).strip("/")
-            if "argocd" in component_rel:
-                continue
-            local_paths.append(repo_root / "components" / component_rel)
-        elif item.startswith("#"):
-            # Commented line, skip
-            continue
-        elif not item.startswith("http"):
-            # Local path in example
-            example_dir = kustomization_path.parent
-            resolved = (example_dir / item).resolve()
-            try:
-                rel = resolved.relative_to(repo_root)
-            except ValueError:
-                continue
-            rel_str = str(rel).replace("\\", "/")
-            if "argocd" in rel_str:
-                continue
-            if "components/rhoso" in rel_str:
-                local_paths.append(repo_root / rel)
-
-    return local_paths
-
-
 def generate_kustomization(
     build_dir: Path, component_paths: list[Path], repo_root: Path
 ) -> None:
@@ -201,7 +148,9 @@ def generate_kustomization(
     import yaml
 
     out_path = build_dir / "kustomization.yaml"
-    out_path.write_text(yaml.dump(kustomization, default_flow_style=False, sort_keys=False))
+    out_path.write_text(
+        yaml.dump(kustomization, default_flow_style=False, sort_keys=False)
+    )
 
 
 def run_kustomize_build(build_dir: Path) -> tuple[bool, str]:
@@ -259,7 +208,11 @@ def format_results_table(results: list[BuildResult]) -> str:
 
     for r in results:
         status = "OK" if r.success else "FAILED"
-        id_display = r.test_case.id[:col_width] if len(r.test_case.id) <= col_width else r.test_case.id[: col_width - 3] + "..."
+        id_display = (
+            r.test_case.id[:col_width]
+            if len(r.test_case.id) <= col_width
+            else r.test_case.id[: col_width - 3] + "..."
+        )
         lines.append(f"| {id_display:<{col_width}} | {status:<{status_width}} |")
 
     return "\n".join(lines)
