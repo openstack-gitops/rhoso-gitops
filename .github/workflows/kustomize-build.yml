@@ -32,7 +32,10 @@ jobs:
           python-version: "3.13"
 
       - name: Install Kustomize
-        uses: syntaqx/setup-kustomize@v1
+        run: |
+          KUSTOMIZE_VERSION="5.4.1"
+          curl -sLf "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" | tar -xzf -
+          sudo mv kustomize /usr/local/bin/
 
       - name: Install PyYAML
         run: pip install pyyaml
