@@ -1,0 +1,39 @@
+---
+name: kustomize-build
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "components/rhoso/**"
+      - "example/**"
+      - ".github/workflows/kustomize-build.yml"
+      - ".github/scripts/verify-kustomize-builds.py"
+  push:
+    branches:
+      - main
+    paths:
+      - "components/rhoso/**"
+      - "example/**"
+      - ".github/workflows/kustomize-build.yml"
+      - ".github/scripts/verify-kustomize-builds.py"
+jobs:
+  kustomize-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Kustomize
+        uses: syntaqx/setup-kustomize@v1
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Verify Kustomize builds
+        run: python .github/scripts/verify-kustomize-builds.py
