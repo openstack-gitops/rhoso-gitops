@@ -22,6 +22,8 @@ on:  # yamllint disable-line rule:truthy
 jobs:
   kustomize-build:
     runs-on: ubuntu-latest
+    env:
+      KUSTOMIZE_VERSION: "5.4.1"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,7 +35,6 @@ jobs:
 
       - name: Install Kustomize
         run: |
-          KUSTOMIZE_VERSION="5.4.1"
           curl -sLf "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" | tar -xzf -
           sudo mv kustomize /usr/local/bin/
 

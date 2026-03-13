@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
+import yaml
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -144,8 +145,6 @@ def generate_kustomization(
         "kind": "Kustomization",
         "components": rel_paths,
     }
-
-    import yaml
 
     out_path = build_dir / "kustomization.yaml"
     out_path.write_text(
