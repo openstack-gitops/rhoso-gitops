@@ -1,0 +1,45 @@
+---
+name: kustomize-build
+permissions:
+  contents: read
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "components/rhoso/**"
+      - "example/**"
+      - ".github/workflows/kustomize-build.yml"
+      - ".github/scripts/verify-kustomize-builds.py"
+  push:
+    branches:
+      - main
+    paths:
+      - "components/rhoso/**"
+      - "example/**"
+      - ".github/workflows/kustomize-build.yml"
+      - ".github/scripts/verify-kustomize-builds.py"
+jobs:
+  kustomize-build:
+    runs-on: ubuntu-latest
+    env:
+      KUSTOMIZE_VERSION: "5.4.1"
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Kustomize
+        run: |
+          curl -sLf "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" | tar -xzf -
+          sudo mv kustomize /usr/local/bin/
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Verify Kustomize builds
+        run: python .github/scripts/verify-kustomize-builds.py
