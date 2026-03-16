@@ -4,4 +4,4 @@ kind: Kustomization
 
 components:
   - https://github.com/openstack-k8s-operators/architecture/lib/olm-deps?ref=7da5f2e1dc2bfce99e269b0017783679ca405d8c
-  - https://github.com/openstack-gitops/rhoso-gitops/components/argocd/annotations?ref=v0.1.0
+  - https://github.com/openstack-k8s-operators/gitops/components/argocd/annotations?ref=v0.1.0

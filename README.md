@@ -171,14 +171,14 @@ These annotations enable ArgoCD to determine the order that resources are create
         path: "..."
         kustomize:
           components:
-            -  https://github.com/openstack-gitops/rhoso-gitops/components/argocd/annotations?ref=TAG
+            -  https://github.com/openstack-k8s-operators/gitops/components/argocd/annotations?ref=TAG
     ```
 1. From within an overlay or base:
     ```yaml
     apiVersion: kustomize.config.k8s.io/v1beta1
     kind: Kustomization
     components:
-      - https://github.com/openstack-gitops/rhoso-gitops/components/argocd/annotations?ref=TAG
+      - https://github.com/openstack-k8s-operators/gitops/components/argocd/annotations?ref=TAG
     # [...]
     ```
 
