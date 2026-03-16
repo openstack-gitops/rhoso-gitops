@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify that all rhoso-gitops components build successfully with kustomize.
+"""Verify that all gitops components build successfully with kustomize.
 
 Discovers components dynamically under components/rhoso/ and example/,
 runs kustomize build for each, and reports a summary table. Fails only at
