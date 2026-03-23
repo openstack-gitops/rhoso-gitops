@@ -1,5 +1,7 @@
 ---
 name: file-consistency
+permissions:
+  contents: read
 on:  # yamllint disable-line rule:truthy
   pull_request:
     branches:
