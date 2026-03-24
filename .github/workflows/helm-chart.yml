@@ -1,0 +1,102 @@
+---
+# Validate charts/rhoso-apps: lint (incl. values.schema.json), helm-unittest,
+# kubeconform on rendered CRs, package.
+# TODO: When release process is defined, persist and publish the chart artifact
+# (rhoso-apps-<version>.tgz from `helm package`)—e.g. GitHub Release asset, Helm
+# HTTP repo, or OCI registry—for downloadable installs.
+name: helm-chart
+permissions:
+  contents: read
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "charts/**"
+      - ".github/workflows/helm-chart.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "charts/**"
+      - ".github/workflows/helm-chart.yml"
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    # Tool download integrity: linux amd64 only (matches ubuntu-latest).
+    #
+    # The SHA256 values below are committed so CI checks the *downloaded* file
+    # against a maintainer-approved hash (bump + review in git). This catches
+    # in-transit tampering, wrong file/download errors, and accidental URL
+    # mistakes; it does not replace "do we trust the upstream project?" (record
+    # a new hash when you accept a new release).
+    #
+    # Bumping kubeconform:
+    #   1. Set KUBECONFORM_VERSION to the new tag (e.g. v0.6.7).
+    #   2. Open that release, download CHECKSUMS; copy the sha256 for
+    #      kubeconform-linux-amd64.tar.gz into KUBECONFORM_SHA256 (or run
+    #      sha256sum on that file on a trusted host).
+    #
+    # helm-unittest: pinned by Git tag (no release tarball checksum). Bump
+    # HELM_UNITTEST_VERSION to a published tag, then
+    #   helm plugin install https://github.com/helm-unittest/helm-unittest.git --version <tag>
+    # so CI always installs that ref (not floating main).
+    #
+    # Kubeconform: linux-amd64 only below; if the job is moved to arm64, add new
+    # KUBECONFORM_SHA256 (or a matrix).
+    env:
+      KUBECONFORM_VERSION: v0.6.7
+      KUBECONFORM_SHA256: 95f14e87aa28c09d5941f11bd024c1d02fdc0303ccaa23f61cef67bc92619d73
+      HELM_UNITTEST_VERSION: v0.7.0
+      # Kubernetes OpenAPI for built-in kinds; Argo Application uses Datree CRDs-catalog.
+      KUBERNETES_SCHEMA_VERSION: "1.29.0"
+    defaults:
+      run:
+        working-directory: charts/rhoso-apps
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Helm
+        uses: azure/setup-helm@v4
+        with:
+          version: v3.16.3
+
+      - name: Install helm-unittest plugin
+        # Avoid job default charts/rhoso-apps cwd (plugin hooks can be cwd-sensitive).
+        working-directory: ${{ github.workspace }}
+        run: |
+          set -euo pipefail
+          helm plugin install https://github.com/helm-unittest/helm-unittest.git --version "${HELM_UNITTEST_VERSION}"
+
+      - name: Install kubeconform
+        working-directory: ${{ github.workspace }}
+        run: |
+          set -euo pipefail
+          mkdir -p "${HOME}/.local/bin"
+          tgz="/tmp/kubeconform-linux-amd64.tar.gz"
+          curl -fsSL -o "${tgz}" \
+            "https://github.com/yannh/kubeconform/releases/download/${KUBECONFORM_VERSION}/kubeconform-linux-amd64.tar.gz"
+          printf '%s  %s\n' "${KUBECONFORM_SHA256}" "${tgz}" | sha256sum -c -
+          tar xzf "${tgz}" -C /tmp
+          mv /tmp/kubeconform "${HOME}/.local/bin/kubeconform"
+          echo "${HOME}/.local/bin" >> "${GITHUB_PATH}"
+          rm -f "${tgz}"
+
+      - name: Helm lint
+        run: helm lint . -f values.yaml
+
+      - name: Helm unittest
+        run: helm unittest .
+
+      - name: Helm template (kubeconform)
+        run: |
+          set -euo pipefail
+          helm template rhoso-apps-test . -f values.yaml | kubeconform -summary \
+            -kubernetes-version "${KUBERNETES_SCHEMA_VERSION}" \
+            -schema-location default \
+            -schema-location 'https://raw.githubusercontent.com/datreeio/CRDs-catalog/main/{{.Group}}/{{.ResourceKind}}_{{.ResourceAPIVersion}}.json'
+
+      # Produces rhoso-apps-*.tgz; publishing is TODO until release workflow exists (see file header).
+      - name: Helm package
+        run: helm package .
