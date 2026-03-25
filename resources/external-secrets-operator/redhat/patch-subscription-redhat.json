@@ -1,0 +1,8 @@
+[
+  {"op": "replace", "path": "/metadata/name", "value": "openshift-external-secrets-operator"},
+  {"op": "replace", "path": "/metadata/namespace", "value": "external-secrets-operator"},
+  {"op": "remove", "path": "/metadata/labels"},
+  {"op": "replace", "path": "/spec/channel", "value": "stable-v1"},
+  {"op": "replace", "path": "/spec/name", "value": "openshift-external-secrets-operator"},
+  {"op": "replace", "path": "/spec/source", "value": "redhat-operators"}
+]
