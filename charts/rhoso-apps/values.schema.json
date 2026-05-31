@@ -111,6 +111,14 @@
               "resources-finalizer.argocd.argoproj.io/foreground"
             ]
           }
+        },
+        "ignoreDifferences": {
+          "type": "array",
+          "description": "Argo CD spec.ignoreDifferences to ignore fields during sync comparison.",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
         }
       }
     }

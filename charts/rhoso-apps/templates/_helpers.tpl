@@ -96,3 +96,16 @@ Pass dict with key "app" (per-application values map).
 {{- $f := default (list "resources-finalizer.argocd.argoproj.io/background") $app.finalizers }}
 {{- toYaml $f -}}
 {{- end }}
+
+{{/*
+Optional spec.ignoreDifferences (Argo CD ignoreDifferences).
+Pass dict with key "app" (per-application values map). Omitted if unset or empty.
+*/}}
+{{- define "rhoso-apps.ignoreDifferences" -}}
+{{- $app := .app -}}
+{{- $ignore := $app.ignoreDifferences | default list }}
+{{- if not (empty $ignore) }}
+  ignoreDifferences:
+{{ toYaml $ignore | indent 4 }}
+{{- end }}
+{{- end }}
