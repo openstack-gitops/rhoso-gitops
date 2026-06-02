@@ -384,7 +384,7 @@ applications:
             name: your-vaultauth-name
             namespace: openstack
           patch: |-
-            - op: replace
+            - op: add
               path: /spec/appRole/secretRef
               value: "your-vault-approle-secret-name"
       components:
