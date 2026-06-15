@@ -8,6 +8,8 @@ on:  # yamllint disable-line rule:truthy
       - main
     paths:
       - "components/rhoso/**"
+      - "components/secrets/**"
+      - "resources/**"
       - "example/**"
       - ".github/workflows/kustomize-build.yml"
       - ".github/scripts/verify-kustomize-builds.py"
@@ -16,6 +18,8 @@ on:  # yamllint disable-line rule:truthy
       - main
     paths:
       - "components/rhoso/**"
+      - "components/secrets/**"
+      - "resources/**"
       - "example/**"
       - ".github/workflows/kustomize-build.yml"
       - ".github/scripts/verify-kustomize-builds.py"

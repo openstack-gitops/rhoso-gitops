@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Verify that all gitops components build successfully with kustomize.
 
-Discovers components dynamically under components/rhoso/ and example/,
-runs kustomize build for each, and reports a summary table. Fails only at
-the end if any component failed.
+Discovers components dynamically under components/rhoso/, example/, and
+resources/, runs kustomize build for each, and reports a summary table.
+Fails only at the end if any component failed.
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ from pathlib import Path
 KUSTOMIZATION_FILES = ("kustomization.yaml", "kustomization.yml", "Kustomization")
 RHOSO_COMPONENTS_ROOT = Path("components/rhoso")
 EXAMPLES_ROOT = Path("example")
+RESOURCES_ROOT = Path("resources")
 BUILD_TEST_DIR = Path(".build-test")
 
 
@@ -106,6 +107,31 @@ def discover_examples(repo_root: Path) -> list[BuildTestCase]:
                 component_paths=[],  # Unused: we build directly from source_directory
                 build_dir_name=f"example-{slug}",
                 source_directory=example_dir,
+            )
+        )
+
+    return cases
+
+
+def discover_resources(repo_root: Path) -> list[BuildTestCase]:
+    """Discover all resource wrappers under resources/."""
+    cases: list[BuildTestCase] = []
+    resources_root = repo_root / RESOURCES_ROOT
+
+    if not resources_root.exists():
+        return cases
+
+    for kustomization_path in _find_kustomization_files(resources_root):
+        rel_path = kustomization_path.relative_to(resources_root).parent
+        id_str = str(rel_path).replace("\\", "/")
+        slug = id_str.replace("/", "-")
+        source_dir = resources_root / rel_path
+        cases.append(
+            BuildTestCase(
+                id=f"resources/{id_str}",
+                component_paths=[],
+                build_dir_name=f"resources-{slug}",
+                source_directory=source_dir,
             )
         )
 
@@ -240,6 +266,7 @@ def main() -> int:
     test_cases: list[BuildTestCase] = []
     test_cases.extend(discover_rhoso_components(repo_root))
     test_cases.extend(discover_examples(repo_root))
+    test_cases.extend(discover_resources(repo_root))
 
     if not test_cases:
         print("No components to test.")
