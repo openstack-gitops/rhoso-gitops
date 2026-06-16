@@ -17,4 +17,8 @@ This document describes how AI agents should work with this repository. The goal
 - **Releases, tags, and `?ref=`** → [docs/agents/releases.md](docs/agents/releases.md)
 - **Branches, PRs, commits, expectations for changes** → [CONTRIBUTING.md](CONTRIBUTING.md)
 
+**Skills (repeatable tasks)**
+
+- **Adding a new controlplane service component** → [docs/skills/add-controlplane-service.md](docs/skills/add-controlplane-service.md)
+
 **Domain context (operators and consumers):** the root [README.md](README.md) documents RHOSO deployment, ArgoCD conventions (e.g. sync-waves, pinned `?ref=`), and how applications are sliced—it does not define repository editing policy. Use the links above for how to change this repository.
