@@ -91,6 +91,27 @@ rules:
     verbs:
       - '*'
   - apiGroups:
+      - external-secrets.io
+    resources:
+      - 'externalsecrets'
+      - 'secretstores'
+      - 'clustersecretstores'
+    verbs:
+      - '*'
+  - apiGroups:
+      - networking.k8s.io
+    resources:
+      - 'networkpolicies'
+    verbs:
+      - '*'
+  - apiGroups:
+      - operator.openshift.io
+    resources:
+      - 'externalsecretsconfigs'
+      - 'externalsecretsmanagers'
+    verbs:
+      - '*'
+  - apiGroups:
       - operator.openstack.org
     resources:
       - 'openstacks'

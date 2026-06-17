@@ -99,9 +99,25 @@ patches:
         value:
           argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
           argocd.argoproj.io/sync-wave: "-5"
-  # --- Wave 1: MetalLB, network policies, and Vault connection ---
+  # --- Wave 1: MetalLB, network policies, Vault connection, and ESO config ---
   - target:
       kind: MetalLB
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+          argocd.argoproj.io/sync-wave: "1"
+  - target:
+      kind: NetworkPolicy
+    patch: |-
+      - op: add
+        path: /metadata/annotations
+        value:
+          argocd.argoproj.io/sync-wave: "1"
+  - target:
+      group: operator.openshift.io
+      kind: ExternalSecretsConfig
     patch: |-
       - op: add
         path: /metadata/annotations
