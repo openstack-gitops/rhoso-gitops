@@ -201,6 +201,72 @@ tests:
       - failedTemplate:
           errorPattern: destinationServer
 
+  - it: omits spec.ignoreDifferences when not set in values
+    values:
+      - ../values.yaml
+    documentSelector:
+      path: metadata.name
+      value: operator-dependencies
+    asserts:
+      - notExists:
+          path: spec.ignoreDifferences
+
+  - it: renders spec.ignoreDifferences when set
+    set:
+      applicationNamespace: openshift-gitops
+      destinationServer: https://kubernetes.default.svc
+      applications:
+        ignore-diff-test:
+          enabled: true
+          repoURL: https://github.com/example/repo
+          path: "."
+          targetRevision: main
+          syncOptions:
+            - RespectIgnoreDifferences=true
+          ignoreDifferences:
+            - group: core.openstack.org
+              kind: OpenStackControlPlane
+              jsonPointers:
+                - /spec/tls
+                - /spec/watcher
+    documentSelector:
+      path: metadata.name
+      value: ignore-diff-test
+    asserts:
+      - equal:
+          path: spec.ignoreDifferences[0].group
+          value: core.openstack.org
+      - equal:
+          path: spec.ignoreDifferences[0].kind
+          value: OpenStackControlPlane
+      - equal:
+          path: spec.ignoreDifferences[0].jsonPointers[0]
+          value: /spec/tls
+
+  - it: renders spec.ignoreDifferences with jqPathExpressions
+    set:
+      applicationNamespace: openshift-gitops
+      destinationServer: https://kubernetes.default.svc
+      applications:
+        jq-diff-test:
+          enabled: true
+          repoURL: https://github.com/example/repo
+          path: "."
+          targetRevision: main
+          syncOptions: []
+          ignoreDifferences:
+            - group: dataplane.openstack.org
+              kind: OpenStackDataPlaneNodeSet
+              jqPathExpressions:
+                - '.spec.preProvisioned | select(. == false or . == "false")'
+    documentSelector:
+      path: metadata.name
+      value: jq-diff-test
+    asserts:
+      - equal:
+          path: spec.ignoreDifferences[0].jqPathExpressions[0]
+          value: '.spec.preProvisioned | select(. == false or . == "false")'
+
   - it: fails values schema when finalizer is not allowed
     set:
       applicationNamespace: openshift-gitops

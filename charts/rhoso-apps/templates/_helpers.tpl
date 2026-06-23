@@ -87,6 +87,18 @@ Pass dict with key "app" (per-application values map).
 {{- end }}
 
 {{/*
+Optional spec.ignoreDifferences for the Argo CD Application.
+Pass dict with key "app" (per-application values map). Omitted if unset or empty.
+*/}}
+{{- define "rhoso-apps.ignoreDifferences" -}}
+{{- $app := .app -}}
+{{- if and $app.ignoreDifferences (not (empty $app.ignoreDifferences)) }}
+  ignoreDifferences:
+{{ toYaml $app.ignoreDifferences | indent 4 }}
+{{- end }}
+{{- end }}
+
+{{/*
 Argo CD Application metadata.finalizers (resources finalizer: background vs foreground).
 Omitted finalizers default to background deletion.
 Pass dict with key "app" (per-application values map).

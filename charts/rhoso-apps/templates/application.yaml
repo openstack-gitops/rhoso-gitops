@@ -20,5 +20,6 @@ spec:
   destination:
     server: {{ include "rhoso-apps.destinationServer" $ }}
 {{ include "rhoso-apps.syncPolicySpec" (dict "app" $app) }}
+{{ include "rhoso-apps.ignoreDifferences" (dict "app" $app) }}
 {{- end }}
 {{- end }}

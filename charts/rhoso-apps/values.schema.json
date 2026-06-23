@@ -96,6 +96,14 @@
           "description": "Optional Argo CD spec.source.kustomize overrides (see Argo CD Kustomize user guide).",
           "additionalProperties": true
         },
+        "ignoreDifferences": {
+          "type": "array",
+          "description": "Optional spec.ignoreDifferences for the Argo CD Application. Each item follows the Argo CD ResourceIgnoreDifferences schema.",
+          "items": {
+            "type": "object",
+            "additionalProperties": true
+          }
+        },
         "finalizers": {
           "type": "array",
           "description": "Argo CD Application metadata.finalizers (resources finalizer). Omit to use chart default (background).",
@@ -107,6 +115,7 @@
           "items": {
             "type": "string",
             "enum": [
+              "resources-finalizer.argocd.argoproj.io",
               "resources-finalizer.argocd.argoproj.io/background",
               "resources-finalizer.argocd.argoproj.io/foreground"
             ]
