@@ -22,3 +22,33 @@ Rules for agents:
 - When checking `?ref=`, treat URLs that contain `openstack-k8s-operators/gitops` as references to this repository.
 
 If the repository maintainers follow a specific naming scheme for tags (for example, `vMAJOR.MINOR.PATCH`), preserve that scheme and do not invent new formats.
+
+---
+
+### What is `repos_dir`?
+
+`repos_dir` is a local directory containing already-cloned copies of the forked downstream repos to update. Each subdirectory must be a git repository matching one of the names in `DOWNSTREAM_REPO_NAMES`.
+
+- If `repos_dir` is supplied and valid, the skill uses those clones directly — no cloning is performed. Each repo is `git pull`-ed before changes are made.
+- If `repos_dir` is not supplied or does not exist, the skill offers to create it by cloning the forks.
+
+---
+
+### Repo Definitions
+
+The upstream tag is always created on the canonical GitHub repo. Downstream repos are constructed at runtime from `user_namespace` and the base repo names below.
+
+```
+UPSTREAM_REPO=git@github.com:openstack-k8s-operators/gitops.git
+GITLAB_HOST="gitlab.cee.redhat.com"   # default; user can override
+
+DOWNSTREAM_REPO_NAMES=(
+  architecture
+  automation-gitops
+  ci-framework
+  gitops_upstream
+  gitops-examples
+  rhos-nfv-gitops
+)
+# URL pattern: git@${GITLAB_HOST}:${user_namespace}/${repo_name}.git
+```
