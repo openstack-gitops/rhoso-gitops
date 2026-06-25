@@ -364,7 +364,7 @@ applications:
   operator-dependencies:
     kustomize:
       components:
-        - "https://github.com/openstack-k8s-operators/gitops/components/secrets/vault-secrets-operator?ref=v0.2.0"
+        - "https://github.com/openstack-k8s-operators/gitops/components/secrets/vault-secrets-operator?ref=v0.3.0"
 ```
 
 `openstack-secrets` excerpt (Vault Secrets Operator style patch; adjust for

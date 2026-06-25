@@ -14,7 +14,7 @@ applications:
     syncOptions:
       - Prune=true
     syncWave: "-20"
-    targetRevision: v0.1.0
+    targetRevision: v0.3.0
   # Deploy openstack-operator.
   # This covers "Deploying RHOSO - chapter 1"
   # https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_installing-and-preparing-the-openstack-operator
@@ -25,7 +25,7 @@ applications:
     syncOptions:
       - Prune=true
     syncWave: "-20"
-    targetRevision: v0.1.0
+    targetRevision: v0.3.0
   # Create the main OpenStack Custom Resource.
   # This covers "Deploying RHOSO - chapter 1"
   # https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_installing-and-preparing-the-openstack-operator
@@ -36,7 +36,7 @@ applications:
     syncOptions:
       - Prune=true
     syncWave: "-15"
-    targetRevision: v0.1.0
+    targetRevision: v0.3.0
   # Create cluster secrets by syncing from the secure backend (placeholder path).
   # Runs after operator-dependencies provides vault-secrets-operator or external-secrets-operator.
   # This covers "Deploying RHOSO - chapter 2.3"
@@ -48,7 +48,7 @@ applications:
     syncOptions:
       - Prune=true
     syncWave: "-10"
-    targetRevision: v0.1.0
+    targetRevision: v0.3.0
   # Create underlying networks for controlplane and dataplane.
   # Covers "Deploying RHOSO - chapter 3"
   # https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_preparing-rhoso-networks_preparing
@@ -59,7 +59,7 @@ applications:
     syncOptions:
       - Prune=true
     syncWave: "0"
-    targetRevision: v0.1.0
+    targetRevision: v0.3.0
   # Deploy and configure OpenStackControlPlane resource.
   # Covers "Deploying RHOSO - chapter 4"
   # https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_creating-the-control-plane
@@ -72,7 +72,7 @@ applications:
     syncOptions:
       - Prune=true
     syncWave: "10"
-    targetRevision: v0.1.0
+    targetRevision: v0.3.0
   # Deploy and configure OpenStackDataPlaneNodeSet and OpenStackDataPlaneDeployment resources.
   # Covers "Deploying RHOSO - chapter 5"
   # https://docs.redhat.com/en/documentation/red_hat_openstack_services_on_openshift/18.0/html/deploying_red_hat_openstack_services_on_openshift/assembly_creating-the-data-plane
@@ -83,4 +83,4 @@ applications:
     syncOptions:
       - Prune=true
     syncWave: "20"
-    targetRevision: v0.1.0
+    targetRevision: v0.3.0
