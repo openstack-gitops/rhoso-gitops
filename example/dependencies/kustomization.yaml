@@ -6,4 +6,11 @@ components:
   - https://github.com/openstack-k8s-operators/architecture/lib/olm-deps?ref=7da5f2e1dc2bfce99e269b0017783679ca405d8c
   - https://github.com/openstack-k8s-operators/architecture/lib/metallb?ref=7da5f2e1dc2bfce99e269b0017783679ca405d8c
   - https://github.com/openstack-k8s-operators/architecture/lib/nmstate?ref=7da5f2e1dc2bfce99e269b0017783679ca405d8c
-  - https://github.com/openstack-k8s-operators/gitops/components/argocd/annotations?ref=v0.3.0
+  # The argocd/annotations component is intentionally NOT included here.
+  # It must be added by the consumer via the ArgoCD Application spec
+  # (spec.source.kustomize.components). Including it here AND in the app spec
+  # causes kustomize to deduplicate it — the component runs only once during
+  # base processing, before any app-level components (e.g. ESO) add their
+  # resources. Patches in the annotations component that target those
+  # app-level resources become no-ops, breaking sync-wave ordering and
+  # SkipDryRunOnMissingResource behaviour for CRs like ExternalSecretsConfig.
