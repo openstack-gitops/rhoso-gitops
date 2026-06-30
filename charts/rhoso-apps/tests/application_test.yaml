@@ -41,7 +41,7 @@ tests:
           value: example/controlplane
       - equal:
           path: spec.source.targetRevision
-          value: v0.3.0
+          value: v0.3.1
       - equal:
           path: spec.destination.server
           value: https://kubernetes.default.svc
