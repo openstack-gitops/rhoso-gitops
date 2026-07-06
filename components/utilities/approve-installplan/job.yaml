@@ -16,7 +16,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: installplan-approver
-          image: registry.redhat.io/openshift4/ose-tools-rhel9:latest
+          image: registry.redhat.io/openshift4/ose-tools-rhel9@sha256:17d4647d21d7571c11d6f983400da6544376fe8bde8372776e4779ebd8c6fd53  # :latest as of 2026-07-06
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
