@@ -28,6 +28,11 @@ jobs:
     runs-on: ubuntu-latest
     env:
       KUSTOMIZE_VERSION: "5.4.1"
+      # SHA256 of kustomize_v5.4.1_linux_amd64.tar.gz from upstream checksums.txt.
+      # Bumping kustomize: set KUSTOMIZE_VERSION, download the new checksums.txt
+      # from the release page, copy the sha256 for linux_amd64.tar.gz here.
+      # Mirrors the kubeconform pattern in helm-chart.yml (OSPRH-32418 / FIND-006).
+      KUSTOMIZE_SHA256: "3d659a80398658d4fec4ec4ca184b432afa1d86451a60be63ca6e14311fc1c42"
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,8 +44,14 @@ jobs:
 
       - name: Install Kustomize
         run: |
-          curl -sLf "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz" | tar -xzf -
-          sudo mv kustomize /usr/local/bin/
+          set -euo pipefail
+          tgz="/tmp/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz"
+          curl -fsSL -o "${tgz}" \
+            "https://github.com/kubernetes-sigs/kustomize/releases/download/kustomize%2Fv${KUSTOMIZE_VERSION}/kustomize_v${KUSTOMIZE_VERSION}_linux_amd64.tar.gz"
+          printf '%s  %s\n' "${KUSTOMIZE_SHA256}" "${tgz}" | sha256sum -c -
+          tar -xzf "${tgz}" -C /tmp
+          sudo mv /tmp/kustomize /usr/local/bin/
+          rm -f "${tgz}"
 
       - name: Install PyYAML
         run: pip install pyyaml==6.0.3
