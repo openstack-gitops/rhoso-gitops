@@ -10,9 +10,26 @@ spec:
   backoffLimit: 1
   template:
     spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: installplan-approver
           image: registry.redhat.io/openshift4/ose-tools-rhel9:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
           env:
             - name: OS_OPERATORS_NAMESPACE
               value: "openstack-operators"
