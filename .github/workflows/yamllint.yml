@@ -22,7 +22,7 @@ jobs:
           python-version: '3.13'
 
       - name: Install yaml-lint
-        run: pip install yamllint
+        run: pip install yamllint==1.38.0
 
       - name: Run yaml-lint
         run: yamllint -c .yamllint.yml -s .
