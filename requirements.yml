@@ -1,5 +1,11 @@
 ---
 # Ansible galaxy dependencies
 collections:
+  # Pinned to a specific commit SHA (v5.0.0) via git source to avoid
+  # ansible-galaxy API rate limits on high-frequency CI (OSPRH-32420 / FIND-008).
+  # Bump by finding the new tag's dereferenced commit SHA:
+  #   curl -sL https://api.github.com/repos/ansible-collections/kubernetes.core/git/ref/tags/<ver>
+  #   curl -sL https://api.github.com/repos/ansible-collections/kubernetes.core/git/tags/<tag-sha>
   - name: https://github.com/ansible-collections/kubernetes.core
     type: git
+    version: 7b0190f8d592c54faacbe5fccdec7ce7568ec8ab  # v5.0.0
