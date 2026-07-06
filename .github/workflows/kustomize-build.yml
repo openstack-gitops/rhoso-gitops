@@ -35,10 +35,10 @@ jobs:
       KUSTOMIZE_SHA256: "3d659a80398658d4fec4ec4ca184b432afa1d86451a60be63ca6e14311fc1c42"
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b  # v5.3.0
         with:
           python-version: "3.13"
 
