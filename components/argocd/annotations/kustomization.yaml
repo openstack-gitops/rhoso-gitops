@@ -33,6 +33,21 @@ patches:
         value:
           argocd.argoproj.io/managed-by: openshift-gitops
           argocd.argoproj.io/sync-wave: "-31"
+  # --- Wave -35: Create ValidatingAdmissionPolicy before namespaces (security control) ---
+  - target:
+      kind: ValidatingAdmissionPolicy
+      name: restrict-baremetalhost-to-openstack.metal3.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-wave
+        value: "-35"
+  - target:
+      kind: ValidatingAdmissionPolicyBinding
+      name: restrict-baremetalhost-to-openstack-binding.metal3.io
+    patch: |-
+      - op: add
+        path: /metadata/annotations/argocd.argoproj.io~1sync-wave
+        value: "-35"
   # --- Wave -20: Set up OperatorGroup and CatalogSource for Operator deployments ---
   - target:
       kind: OperatorGroup
