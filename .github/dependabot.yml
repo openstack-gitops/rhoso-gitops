@@ -1,0 +1,79 @@
+---
+version: 2
+updates:
+  # GitHub Actions - weekly security updates
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    open-pull-requests-limit: 10
+
+  # Python dependencies - root directory
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "python"
+    open-pull-requests-limit: 10
+
+  # Python dependencies - openshift-gitops.deploy
+  - package-ecosystem: "pip"
+    directory: "/openshift-gitops.deploy"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "python"
+    open-pull-requests-limit: 10
+
+  # Docker images in approve-installplan utility
+  - package-ecosystem: "docker"
+    directory: "/components/utilities/approve-installplan"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "docker"
+    open-pull-requests-limit: 5
+
+  # Docker images in controlplane post-delete hook
+  - package-ecosystem: "docker"
+    directory: "/components/argocd/hooks/postDelete/controlplane"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "docker"
+    open-pull-requests-limit: 5
+
+  # Docker images in dataplane post-delete hook
+  - package-ecosystem: "docker"
+    directory: "/components/argocd/hooks/postDelete/dataplane"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "docker"
+    open-pull-requests-limit: 5
+
+  # Docker images in observability post-delete hook
+  - package-ecosystem: "docker"
+    directory: "/components/argocd/hooks/postDelete/deploy-operators"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "docker"
+    open-pull-requests-limit: 5
