@@ -1,0 +1,11 @@
+---
+# ValidatingAdmissionPolicyBinding for BareMetalHost restriction policy
+# Binds the restrict-baremetalhost-to-openstack policy cluster-wide
+
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicyBinding
+metadata:
+  name: restrict-baremetalhost-to-openstack-binding.metal3.io
+spec:
+  policyName: restrict-baremetalhost-to-openstack.metal3.io
+  validationActions: [Deny]

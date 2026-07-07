@@ -1,0 +1,25 @@
+---
+# ValidatingAdmissionPolicy to restrict BareMetalHost creation to OpenStack namespaces
+# This policy enforces that BareMetalHost resources can only be created in the
+# 'openstack' or 'openstack-operators' namespaces, even though the Bare Metal
+# Operator is configured to watch all namespaces (watchAllNamespaces: true).
+# This implements namespace-scoped security controls for bare metal provisioning.
+
+apiVersion: admissionregistration.k8s.io/v1
+kind: ValidatingAdmissionPolicy
+metadata:
+  name: restrict-baremetalhost-to-openstack.metal3.io
+spec:
+  failurePolicy: Fail
+  matchConstraints:
+    resourceRules:
+      - apiGroups: ["metal3.io"]
+        apiVersions: ["v1alpha1"]
+        operations: ["CREATE"]
+        resources: ["baremetalhosts"]
+  validations:
+    - expression: >-
+        namespaceObject.metadata.name == 'openstack' ||
+        namespaceObject.metadata.name == 'openstack-operators'
+      message: "BareMetalHost resources can only be created in openstack or openstack-operators namespaces"
+      reason: Forbidden
