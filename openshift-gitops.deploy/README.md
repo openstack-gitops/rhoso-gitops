@@ -3,6 +3,8 @@
 Ansible script for managing deployment of Red Hat OpenShift GitOps Operator on
 OpenShift.
 
+> **⚠️ WARNING**: The default configuration is designed for development/testing and is **NOT hardened for production use**. Before deploying to production environments, review [SECURITY.md](SECURITY.md) for required hardening steps including AppProject restrictions, RBAC review, and GitOps security best practices.
+
 ## Getting started
 
 Intent is for this code to be as self-contained as possible, avoiding reliance
