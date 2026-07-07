@@ -13,9 +13,26 @@ spec:
     spec:
       serviceAccountName: openshift-gitops-argocd-application-controller
       restartPolicy: Never
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: wait-and-clean
-          image: registry.redhat.io/openshift4/ose-cli:latest
+          image: registry.redhat.io/openshift4/ose-cli@sha256:ef83967297f619f45075e7fd1428a1eb981622a6c174c46fb53b158ed24bed85  # :latest as of 2026-07-06
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
           command: ['sh', '-c']
           args:
             - |

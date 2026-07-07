@@ -1,3 +1,5 @@
 # Python requirements
-ansible-core
-kubernetes
+# Versions pinned to prevent floating PyPI installs (OSPRH-32419 / FIND-007).
+# Bump versions after testing with the new release.
+ansible-core==2.21.1
+kubernetes==36.0.2
