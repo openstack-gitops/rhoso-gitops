@@ -1,0 +1,48 @@
+---
+name: OpenSSF Scorecard
+permissions: read-all
+
+on:  # yamllint disable-line rule:truthy
+  branch_protection_rule:
+  schedule:
+    # Weekly on Mondays at 9:17 AM UTC (avoiding :00/:30 for API load distribution)
+    - cron: '17 9 * * 1'
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  analysis:
+    name: Scorecard Analysis
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write  # Upload SARIF results to GitHub Security tab
+      id-token: write         # Publish results to OpenSSF API
+      contents: read          # Read repository contents
+      actions: read           # Read workflow configurations
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0  # v7.0.0
+        with:
+          persist-credentials: false
+
+      - name: Run OpenSSF Scorecard
+        uses: ossf/scorecard-action@4eaacf0543bb3f2c246792bd56e8cdeffafb205a  # v2.4.3
+        with:
+          results_file: results.sarif
+          results_format: sarif
+          publish_results: true
+
+      - name: Upload SARIF results to Security tab
+        uses: github/codeql-action/upload-sarif@411c4c9a36b3fca4d674f06b6396b2c6d23522c6  # v3
+        with:
+          sarif_file: results.sarif
+
+      - name: Upload Scorecard results as artifact
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882  # v4.4.3
+        with:
+          name: scorecard-results
+          path: results.sarif
+          retention-days: 30
