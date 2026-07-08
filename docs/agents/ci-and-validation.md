@@ -23,6 +23,9 @@ Before creating a commit or a pull request, agents must:
    - All tests pass.
    - All linters and formatters pass.
    - Generated content (if any) is up to date relative to the commands used in this repo (for example, `make generate` or equivalent, if present).
+3. **For RBAC changes (ClusterRole/Role):**
+   - Run the RBAC security validation: `python3 .github/scripts/check-rbac-wildcards.py`
+   - See [RBAC security](rbac-security.md) for agent requirements and [RBAC security validation skill](../skills/rbac-security-validation.md) for fixing violations.
 
 If a required tool is not available in the current environment, clearly note the missing tool and do not assume the checks passed.
 

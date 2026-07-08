@@ -26,3 +26,21 @@ jobs:
 
       - name: Run yaml-lint
         run: yamllint -c .yamllint.yml -s .
+
+  rbac-security-check:
+    name: RBAC Wildcard Security Check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: pip install pyyaml
+
+      - name: Check RBAC for dangerous wildcards
+        run: python3 .github/scripts/check-rbac-wildcards.py

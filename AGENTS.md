@@ -14,11 +14,13 @@ This document describes how AI agents should work with this repository. The goal
 - **Purpose, directories (`/charts`, `/components`, `/example`)** → [docs/agents/repository.md](docs/agents/repository.md)
 - **YAML, Helm, Kustomize** → [docs/agents/yaml-helm-kustomize.md](docs/agents/yaml-helm-kustomize.md)
 - **What CI runs, required checks, when in doubt** → [docs/agents/ci-and-validation.md](docs/agents/ci-and-validation.md)
+- **RBAC security requirements and automated validation** → [docs/agents/rbac-security.md](docs/agents/rbac-security.md)
 - **Releases, tags, and `?ref=`** → [docs/agents/releases.md](docs/agents/releases.md)
 - **Branches, PRs, commits, expectations for changes** → [CONTRIBUTING.md](CONTRIBUTING.md)
 
 **Skills (repeatable tasks)**
 
 - **Adding a new controlplane service component** → [docs/skills/add-controlplane-service.md](docs/skills/add-controlplane-service.md)
+- **Validating and fixing RBAC security issues** → [docs/skills/rbac-security-validation.md](docs/skills/rbac-security-validation.md)
 
 **Domain context (operators and consumers):** the root [README.md](README.md) documents RHOSO deployment, ArgoCD conventions (e.g. sync-waves, pinned `?ref=`), and how applications are sliced—it does not define repository editing policy. Use the links above for how to change this repository.

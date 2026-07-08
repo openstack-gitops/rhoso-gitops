@@ -41,10 +41,29 @@ rules:
       - ""
     resources:
       - secrets
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - patch
+      - delete
+  - apiGroups:
+      - ""
+    resources:
       - persistentvolumeclaims
+    verbs:
+      - get
+      - list
+      - delete
+  - apiGroups:
+      - ""
+    resources:
       - pods
     verbs:
-      - '*'
+      - get
+      - list
+      - watch
   - apiGroups:
       - project.openshift.io
     resources:
@@ -54,15 +73,30 @@ rules:
   - apiGroups:
       - metal3.io
     resources:
-      - '*'
+      - baremetalhosts
+      - provisionings
     verbs:
-      - '*'
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
   - apiGroups:
       - lvm.topolvm.io
     resources:
-      - '*'
+      - lvmclusters
+      - lvmvolumegroups
+      - lvmvolumegroupnodestatuses
     verbs:
-      - '*'
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
   - apiGroups:
       - cluster.open-cluster-management.io
     resources:
@@ -70,18 +104,33 @@ rules:
       - 'managedclustersetbindings'
     verbs:
       - '*'
-  - apiGroups:
-      - multicluster.openshift.io
-    resources:
-      - '*'
-    verbs:
-      - '*'
+  # multicluster.openshift.io - Currently not used in manifests, but kept for future multicluster features
+  # TODO: Remove if not needed, or add specific resources when multicluster is enabled
+  # - apiGroups:
+  #     - multicluster.openshift.io
+  #   resources:
+  #     - multiclusterengines
+  #     - multiclusterhubs
+  #   verbs:
+  #     - get
+  #     - list
+  #     - watch
+  #     - create
+  #     - update
+  #     - patch
+  #     - delete
   - apiGroups:
       - baremetal.openstack.org
     resources:
-      - '*'
+      - openstackbaremetalsets
     verbs:
-      - '*'
+      - get
+      - list
+      - watch
+      - create
+      - update
+      - patch
+      - delete
   - apiGroups:
       - secrets.hashicorp.com
     resources:
