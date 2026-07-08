@@ -1,0 +1,10 @@
+---
+# Generic InstallPlan approver for operators in openshift-operators namespace.
+# Include this component in any Kustomization that deploys a Subscription with
+# installPlanApproval: Manual into openshift-operators (e.g. ESO, VSO).
+# The Subscription should be in sync-wave "0" so the Job (wave "1") runs after it.
+apiVersion: kustomize.config.k8s.io/v1alpha1
+kind: Component
+resources:
+  - job.yaml
+  - rbac.yaml

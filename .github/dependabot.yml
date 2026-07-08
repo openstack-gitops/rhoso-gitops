@@ -45,6 +45,17 @@ updates:
       - "docker"
     open-pull-requests-limit: 5
 
+  # Docker images in approve-installplan-generic utility (ESO/VSO InstallPlan approver)
+  - package-ecosystem: "docker"
+    directory: "/components/utilities/approve-installplan-generic"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels:
+      - "dependencies"
+      - "docker"
+    open-pull-requests-limit: 5
+
   # Docker images in controlplane post-delete hook
   - package-ecosystem: "docker"
     directory: "/components/argocd/hooks/postDelete/controlplane"

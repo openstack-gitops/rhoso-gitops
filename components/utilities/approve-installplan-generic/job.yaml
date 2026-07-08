@@ -1,0 +1,132 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: approve-installplan-openshift-operators
+  namespace: openshift-gitops
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: installplan-approver
+          image: registry.redhat.io/openshift4/ose-tools-rhel9@sha256:17d4647d21d7571c11d6f983400da6544376fe8bde8372776e4779ebd8c6fd53  # :latest as of 2026-07-06
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            limits:
+              cpu: 200m
+              memory: 256Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          env:
+            - name: NAMESPACE
+              value: "openshift-operators"
+            - name: RETRIES
+              value: "60"
+            - name: DELAY
+              value: "10"
+            - name: DEBUG
+              value: "true"
+            - name: WEBHOOK_NAMESPACE
+              value: ""
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -eo pipefail
+              if [ "${DEBUG}" = "true" ]; then
+                set -x
+              fi
+              NAMESPACE=${NAMESPACE:-"openshift-operators"}
+              RETRIES=${RETRIES:-60}
+              DELAY=${DELAY:-10}
+
+              log() {
+                echo "$(date -u +%Y-%m-%dT%H:%M:%SZ) $@" >&2
+              }
+
+              approve_pending_installplans() {
+                log "Looking for unapproved Manual InstallPlans in namespace ${NAMESPACE}..."
+                for i in $(seq 1 $RETRIES); do
+                  pending=$(oc get installplan -n $NAMESPACE -o json \
+                    | jq -r '.items[] | select(.spec.approval=="Manual" and .spec.approved==false) | .metadata.name')
+                  if [ -n "$pending" ]; then
+                    for plan in $pending; do
+                      log "Approving InstallPlan: $plan"
+                      oc patch installplan "$plan" -n $NAMESPACE --type merge \
+                        -p '{"spec":{"approved":true}}' >&2
+                    done
+                    return 0
+                  fi
+                  # All Manual InstallPlans already approved — nothing left to approve.
+                  already=$(oc get installplan -n $NAMESPACE -o json \
+                    | jq -r '.items[] | select(.spec.approval=="Manual" and .spec.approved==true) | .metadata.name')
+                  if [ -n "$already" ]; then
+                    log "All Manual InstallPlans already approved: $already — skipping."
+                    return 0
+                  fi
+                  log "Attempt $i/$RETRIES: No pending InstallPlans found yet, retrying..."
+                  sleep $DELAY
+                done
+                log "Error: No Manual InstallPlans found to approve within the time limit."
+                exit 1
+              }
+
+              wait_for_installplans_complete() {
+                log "Waiting for all Manual InstallPlans in ${NAMESPACE} to complete..."
+                for i in $(seq 1 $RETRIES); do
+                  incomplete=$(oc get installplan -n $NAMESPACE -o json \
+                    | jq -r '.items[] | select(.spec.approval=="Manual" and .status.phase!="Complete") | .metadata.name')
+                  if [ -z "$incomplete" ]; then
+                    log "All Manual InstallPlans completed successfully."
+                    return 0
+                  fi
+                  log "Attempt $i/$RETRIES: Waiting for InstallPlans: $incomplete"
+                  sleep $DELAY
+                done
+                log "Error: InstallPlans did not complete within the time limit."
+                exit 1
+              }
+
+              wait_for_deployments_available() {
+                if [ -z "${WEBHOOK_NAMESPACE:-}" ]; then
+                  return 0
+                fi
+                log "Waiting for Deployments to appear in ${WEBHOOK_NAMESPACE}..."
+                for i in $(seq 1 $RETRIES); do
+                  count=$(oc get deployment -n $WEBHOOK_NAMESPACE --no-headers 2>/dev/null | wc -l)
+                  if [ "$count" -gt 0 ]; then
+                    log "Found $count Deployment(s) in ${WEBHOOK_NAMESPACE}, waiting for Available..."
+                    oc wait deployment --all \
+                      -n $WEBHOOK_NAMESPACE \
+                      --for=condition=Available \
+                      --timeout=300s >&2
+                    log "All Deployments Available in ${WEBHOOK_NAMESPACE}."
+                    return 0
+                  fi
+                  log "Attempt $i/$RETRIES: No Deployments in ${WEBHOOK_NAMESPACE} yet, retrying..."
+                  sleep $DELAY
+                done
+                log "Error: No Deployments appeared in ${WEBHOOK_NAMESPACE} within the time limit."
+                exit 1
+              }
+
+              log "Starting InstallPlan approval for namespace ${NAMESPACE}"
+              approve_pending_installplans
+              wait_for_installplans_complete
+              wait_for_deployments_available
+              log "Job completed successfully."
+      restartPolicy: Never
+      serviceAccountName: openshift-gitops-argocd-application-controller

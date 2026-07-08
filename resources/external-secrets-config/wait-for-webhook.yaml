@@ -1,0 +1,62 @@
+---
+# Job that waits for ESO webhook Deployments to be Available after
+# ExternalSecretsConfig is applied. ArgoCD waits for this Job to complete
+# (wave 2) before marking eso-config as Synced+Healthy, ensuring the ESO
+# webhook is ready when openstack-secrets tries to create SecretStore resources.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: wait-for-eso-webhook
+  namespace: openshift-gitops
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/hook-delete-policy: BeforeHookCreation
+spec:
+  backoffLimit: 1
+  template:
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: wait-for-webhook
+          image: registry.redhat.io/openshift4/ose-tools-rhel9@sha256:17d4647d21d7571c11d6f983400da6544376fe8bde8372776e4779ebd8c6fd53  # :latest as of 2026-07-06
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 50m
+              memory: 64Mi
+          command:
+            - /bin/bash
+            - -c
+            - |
+              set -eo pipefail
+              NAMESPACE="external-secrets"
+              RETRIES=60
+              DELAY=5
+              echo "Waiting for Deployments to appear in ${NAMESPACE}..."
+              for i in $(seq 1 $RETRIES); do
+                count=$(oc get deployment -n $NAMESPACE --no-headers 2>/dev/null | wc -l)
+                if [ "$count" -gt 0 ]; then
+                  echo "Found $count Deployment(s), waiting for Available..."
+                  oc wait deployment --all -n $NAMESPACE \
+                    --for=condition=Available --timeout=300s
+                  echo "All ESO webhook Deployments Available."
+                  exit 0
+                fi
+                echo "Attempt $i/$RETRIES: No Deployments yet, retrying in ${DELAY}s..."
+                sleep $DELAY
+              done
+              echo "Error: ESO Deployments did not appear in time."
+              exit 1
+      restartPolicy: Never
+      serviceAccountName: openshift-gitops-argocd-application-controller

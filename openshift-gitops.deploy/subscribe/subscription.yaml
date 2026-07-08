@@ -8,6 +8,10 @@ metadata:
   namespace: openshift-gitops-operator
 spec:
   channel: latest
+  # installPlanApproval is intentionally Automatic: this subscription is applied
+  # by the Ansible bootstrap before ArgoCD exists, so no GitOps Job can approve
+  # a Manual InstallPlan at that stage. Upgrade gating is handled via the
+  # openshift_gitops_deploy_git_ref pin in the automation repo (FIND-010).
   installPlanApproval: Automatic
   name: openshift-gitops-operator
   source: redhat-operators

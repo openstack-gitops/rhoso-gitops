@@ -1,0 +1,20 @@
+---
+# Standalone Kustomization for the ExternalSecretsConfig CR.
+# This path is synced by a dedicated 'eso-config' ArgoCD Application that runs
+# AFTER the operator-dependencies app is Synced+Healthy.
+#
+# Why a separate app?
+# The externalsecretsconfigs.operator.openshift.io CRD is registered by the ESO
+# operator CSV during the operator-dependencies sync. ArgoCD's REST mapper is
+# built once at sync start, so it cannot see a CRD that appears mid-sync.
+# A separate sync starts with a fresh REST mapper that knows the CRD exists.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - externalsecretsconfig.yaml
+  # wave 1: ExternalSecretsConfig triggers ESO operator to create webhook Deployments
+  # wave 2: wait-for-webhook Job polls until ESO Deployments are Available
+  # ArgoCD waits for wave 2 before marking eso-config Synced+Healthy, ensuring
+  # openstack-secrets finds ESO webhook endpoints when creating SecretStore resources.
+  - wait-for-webhook.yaml
