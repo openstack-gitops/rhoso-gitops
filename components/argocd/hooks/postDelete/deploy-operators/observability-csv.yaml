@@ -11,6 +11,12 @@ metadata:
 spec:
   template:
     spec:
+      # NOTE (FIND-013 / OSPRH-32425): This post-delete hook runs as the shared ArgoCD
+      # SA which carries the full gitops-openstack ClusterRole. The hook is an example
+      # pattern for CI/lab environments; it only needs delete on ClusterServiceVersions
+      # in openshift-operators. For production use, replace with a dedicated SA bound
+      # to a minimal Role scoped to that single verb/resource/namespace, and set
+      # automountServiceAccountToken: true only on the Job pod spec.
       serviceAccountName: openshift-gitops-argocd-application-controller
       restartPolicy: Never
       securityContext:
