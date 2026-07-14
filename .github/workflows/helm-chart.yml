@@ -100,3 +100,21 @@ jobs:
       # Produces rhoso-apps-*.tgz; publishing is TODO until release workflow exists (see file header).
       - name: Helm package
         run: helm package .
+
+      # Generate SBOM for supply-chain transparency (SLSA provenance L1, OpenSSF Scorecard SBOM check).
+      # SPDX format is industry standard and SLSA-compatible. Artifact will be attached to GitHub
+      # Releases once the release process is defined (see file header TODO).
+      - name: Generate SBOM for Helm chart
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610  # v0.24.0
+        with:
+          path: charts/rhoso-apps
+          artifact-name: rhoso-apps-sbom.spdx.json
+          output-file: rhoso-apps-sbom.spdx.json
+          format: spdx-json
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882  # v4.4.3
+        with:
+          name: rhoso-apps-sbom
+          path: rhoso-apps-sbom.spdx.json
+          retention-days: 90
