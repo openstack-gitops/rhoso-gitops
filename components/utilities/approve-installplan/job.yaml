@@ -203,11 +203,12 @@ spec:
               wait_for_installplan_completion "$install_plan_name"
 
               log "Checking if this is an initial installation or an update..."
-              if oc get openstack openstack -n $OS_OPERATORS_NAMESPACE; then
-                log "OpenStack CR 'openstack' exists. This is an update."
+              deployed_version=$(oc get openstackversion -n $OS_NAMESPACE -o jsonpath='{.items[0].status.deployedVersion}' 2>/dev/null) || true
+              if [ -n "$deployed_version" ]; then
+                log "Deployed version $deployed_version found. This is an update."
                 wait_for_new_version
               else
-                log "OpenStack CR 'openstack' does not exist. This is an initial installation."
+                log "No deployed version found. This is an initial installation."
                 wait_for_crd
               fi
 
