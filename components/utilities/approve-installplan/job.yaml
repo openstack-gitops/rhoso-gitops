@@ -43,6 +43,8 @@ spec:
               value: "60"
             - name: DEBUG
               value: "true"
+            - name: SUBSCRIPTION_NAME
+              value: "openstack"
           command:
             - /bin/bash
             - -c
@@ -63,6 +65,8 @@ spec:
               INSTALL_PLAN_RETRIES=${INSTALL_PLAN_RETRIES:-60}
               # Delay in seconds between retries.
               DELAY=${DELAY:-10}
+              # Name of the OLM Subscription to read startingCSV from.
+              SUBSCRIPTION_NAME=${SUBSCRIPTION_NAME:-"openstack"}
               # ---
 
               log() {
@@ -70,11 +74,46 @@ spec:
               }
 
               find_and_approve_installplan() {
+                local pinned_csv=""
+                pinned_csv=$(oc get subscription "${SUBSCRIPTION_NAME}" \
+                  -n "${OS_OPERATORS_NAMESPACE}" \
+                  -o jsonpath='{.spec.startingCSV}' 2>/dev/null) || true
+
+                if [ -n "$pinned_csv" ]; then
+                  log "Subscription '${SUBSCRIPTION_NAME}' pins startingCSV: ${pinned_csv}"
+                else
+                  log "Subscription '${SUBSCRIPTION_NAME}' has no startingCSV; will approve any unapproved InstallPlan."
+                fi
+
                 log "Waiting for unapproved InstallPlan..."
+                local install_plan_name=""
                 for i in $(seq 1 $RETRIES); do
-                  install_plan_name=$(oc get installplan -n $OS_OPERATORS_NAMESPACE -o json | jq -r '.items[] | select(.spec.approval=="Manual" and .spec.approved==false) | .metadata.name' | head -n1) || true
+                  if [ -n "$pinned_csv" ]; then
+                    install_plan_name=$(oc get installplan -n "${OS_OPERATORS_NAMESPACE}" -o json | \
+                      jq -r --arg csv "$pinned_csv" \
+                      '.items[] | select(.spec.approval=="Manual" and .spec.approved==false and (.spec.clusterServiceVersionNames | index($csv))) | .metadata.name' | head -n1) || true
+
+                    if [ -z "$install_plan_name" ]; then
+                      local wrong_plan=""
+                      wrong_plan=$(oc get installplan -n "${OS_OPERATORS_NAMESPACE}" -o json | \
+                        jq -r '.items[] | select(.spec.approval=="Manual" and .spec.approved==false) | .metadata.name' | head -n1) || true
+
+                      if [ -n "$wrong_plan" ]; then
+                        local actual_csvs=""
+                        actual_csvs=$(oc get installplan "${wrong_plan}" -n "${OS_OPERATORS_NAMESPACE}" -o json | \
+                          jq -r '.spec.clusterServiceVersionNames | join(", ")') || true
+                        log "ERROR: InstallPlan '${wrong_plan}' targets CSV [${actual_csvs}], not pinned '${pinned_csv}'."
+                        log "ERROR: The catalog resolved a newer version than what is pinned. Refusing to approve."
+                        exit 1
+                      fi
+                    fi
+                  else
+                    install_plan_name=$(oc get installplan -n "${OS_OPERATORS_NAMESPACE}" -o json | \
+                      jq -r '.items[] | select(.spec.approval=="Manual" and .spec.approved==false) | .metadata.name' | head -n1) || true
+                  fi
+
                   [ -n "$install_plan_name" ] && break
-                  log "Attempt $i/$RETRIES: No InstallPlan found, retrying..."
+                  log "Attempt $i/$RETRIES: No matching InstallPlan found, retrying..."
                   sleep $DELAY
                 done
 
@@ -83,8 +122,8 @@ spec:
                   exit 1
                 fi
 
-                log "Found InstallPlan: $install_plan_name, approving..."
-                oc patch installplan $install_plan_name -n $OS_OPERATORS_NAMESPACE --type merge -p '{"spec":{"approved":true}}' >&2
+                log "Found InstallPlan: ${install_plan_name}, approving..."
+                oc patch installplan "${install_plan_name}" -n "${OS_OPERATORS_NAMESPACE}" --type merge -p '{"spec":{"approved":true}}' >&2
                 echo "$install_plan_name"
               }
 
