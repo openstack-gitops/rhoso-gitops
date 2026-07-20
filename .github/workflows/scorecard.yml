@@ -36,7 +36,7 @@ jobs:
           publish_results: true
 
       - name: Upload SARIF results to Security tab
-        uses: github/codeql-action/upload-sarif@411c4c9a36b3fca4d674f06b6396b2c6d23522c6  # v3
+        uses: github/codeql-action/upload-sarif@7188fc363630916deb702c7fdcf4e481b751f97a  # v3
         with:
           sarif_file: results.sarif
 
