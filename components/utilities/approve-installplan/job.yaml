@@ -235,13 +235,4 @@ spec:
 
               log "Job completed successfully."
       restartPolicy: Never
-      # NOTE (FIND-013 / OSPRH-32425): This Job runs as the shared ArgoCD SA which
-      # carries the full gitops-openstack ClusterRole. The approve-installplan pattern
-      # is a CI/lab convenience to handle Manual installPlanApproval without human
-      # intervention; it is not intended for production environments. When OLM v2
-      # (ClusterExtension API) becomes standard, InstallPlan approval is replaced by
-      # version pinning in Git and this Job will no longer be needed. For production
-      # use, create a dedicated SA bound only to a Role granting get/list/patch on
-      # installplans in the target namespace, with automountServiceAccountToken: true
-      # only on the Job pod spec.
-      serviceAccountName: openshift-gitops-argocd-application-controller
+      serviceAccountName: installplan-approver
