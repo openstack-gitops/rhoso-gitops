@@ -2,7 +2,7 @@
 # Dedicated ServiceAccount for the approve-installplan Job.
 # Using a dedicated SA instead of the ArgoCD application controller SA makes
 # the component self-contained and VP-compatible: in Validated Patterns the
-# ArgoCD instance lives in rhoso-gitops-standalone, not openshift-gitops, so
+# ArgoCD instance lives in vp-gitops, not openshift-gitops, so
 # openshift-gitops-argocd-application-controller never exists there.
 apiVersion: v1
 kind: ServiceAccount
@@ -29,6 +29,7 @@ rules:
       - operators.coreos.com
     resources:
       - subscriptions
+      - clusterserviceversions
     verbs:
       - get
       - list
