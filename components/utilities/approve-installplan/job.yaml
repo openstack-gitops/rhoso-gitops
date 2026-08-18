@@ -87,28 +87,44 @@ spec:
 
                 log "Waiting for unapproved InstallPlan..."
                 local install_plan_name=""
+                local all_plans_json=""
+                local wrong_plan=""
+                local actual_csvs=""
                 for i in $(seq 1 $RETRIES); do
+                  # Reset per-iteration so the post-loop error reflects the
+                  # final observed state, not a transient earlier one.
+                  wrong_plan=""
+                  actual_csvs=""
+                  # Fetch all InstallPlans once per iteration and run every jq
+                  # filter below against this single snapshot. This avoids 2-3
+                  # separate API calls per iteration and, more importantly,
+                  # guarantees all filters reason over one consistent view
+                  # (a plan cannot appear/disappear between filters).
+                  all_plans_json=$(oc get installplan -n "${OS_OPERATORS_NAMESPACE}" -o json) || true
+
                   if [ -n "$pinned_csv" ]; then
-                    install_plan_name=$(oc get installplan -n "${OS_OPERATORS_NAMESPACE}" -o json | \
+                    install_plan_name=$(echo "$all_plans_json" | \
                       jq -r --arg csv "$pinned_csv" \
                       '.items[] | select(.spec.approval=="Manual" and .spec.approved==false and (.spec.clusterServiceVersionNames | index($csv))) | .metadata.name' | head -n1) || true
 
                     if [ -z "$install_plan_name" ]; then
-                      local wrong_plan=""
-                      wrong_plan=$(oc get installplan -n "${OS_OPERATORS_NAMESPACE}" -o json | \
+                      wrong_plan=$(echo "$all_plans_json" | \
                         jq -r '.items[] | select(.spec.approval=="Manual" and .spec.approved==false) | .metadata.name' | head -n1) || true
 
                       if [ -n "$wrong_plan" ]; then
-                        local actual_csvs=""
-                        actual_csvs=$(oc get installplan "${wrong_plan}" -n "${OS_OPERATORS_NAMESPACE}" -o json | \
-                          jq -r '.spec.clusterServiceVersionNames | join(", ")') || true
-                        log "ERROR: InstallPlan '${wrong_plan}' targets CSV [${actual_csvs}], not pinned '${pinned_csv}'."
-                        log "ERROR: The catalog resolved a newer version than what is pinned. Refusing to approve."
-                        exit 1
+                        actual_csvs=$(echo "$all_plans_json" | \
+                          jq -r --arg plan "$wrong_plan" \
+                          '.items[] | select(.metadata.name==$plan) | .spec.clusterServiceVersionNames | join(", ")') || true
+                        # Do NOT exit here: OLM catalog resolution is eventually
+                        # consistent, so a newer-than-pinned plan can appear
+                        # transiently before the pinned plan's InstallPlan is
+                        # generated. Warn and keep retrying; only fail after the
+                        # loop is exhausted (handled below).
+                        log "WARNING: InstallPlan '${wrong_plan}' targets CSV [${actual_csvs}], not pinned '${pinned_csv}'. Will retry in case the pinned plan is not resolved yet."
                       fi
                     fi
                   else
-                    install_plan_name=$(oc get installplan -n "${OS_OPERATORS_NAMESPACE}" -o json | \
+                    install_plan_name=$(echo "$all_plans_json" | \
                       jq -r '.items[] | select(.spec.approval=="Manual" and .spec.approved==false) | .metadata.name' | head -n1) || true
                   fi
 
@@ -118,7 +134,12 @@ spec:
                 done
 
                 if [ -z "$install_plan_name" ]; then
-                  log "Error: No manual InstallPlan found to approve within the time limit."
+                  if [ -n "$pinned_csv" ] && [ -n "$wrong_plan" ]; then
+                    log "ERROR: Only found InstallPlan '${wrong_plan}' targeting CSV [${actual_csvs}], not pinned '${pinned_csv}'."
+                    log "ERROR: The catalog resolved a newer version than what is pinned. Refusing to approve."
+                  else
+                    log "Error: No manual InstallPlan found to approve within the time limit."
+                  fi
                   exit 1
                 fi
 
