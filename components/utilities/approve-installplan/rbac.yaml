@@ -22,13 +22,6 @@ rules:
       - get
       - list
   - apiGroups:
-      - operator.openstack.org
-    resources:
-      - openstacks
-    verbs:
-      - get
-      - list
-  - apiGroups:
       - core.openstack.org
     resources:
       - openstackversions
