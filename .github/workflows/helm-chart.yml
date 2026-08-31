@@ -105,7 +105,7 @@ jobs:
       # SPDX format is industry standard and SLSA-compatible. Artifact will be attached to GitHub
       # Releases once the release process is defined (see file header TODO).
       - name: Generate SBOM for Helm chart
-        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610  # v0.24.0
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26  # v0.24.2
         with:
           path: charts/rhoso-apps
           artifact-name: rhoso-apps-sbom.spdx.json
